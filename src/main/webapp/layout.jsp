@@ -1,3 +1,4 @@
+<%--layout.jsp--%>
 <html>
 <head>
   <title>My Application</title>
