@@ -1,25 +1,39 @@
-<%--layout.jsp--%>
-<html>
+<%-- in '/' layout.jsp--%>
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>My Application</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>${title}</title>
+    <!-- Add common CSS or JS files here -->
+<%--    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/main.css">--%>
 </head>
 <body>
-<%@ include file="templet/header.jsp" %>
+<c:if test="${empty isAuthPage}">
+    <!-- Include header and sidebar for non-auth pages -->
+    <header>
+        <%@ include file="templet/header.jsp" %>
+    </header>
+    <aside>
+        <%@ include file="templet/sidebar.jsp" %>
+    </aside>
+</c:if>
 
-<div class="content">
-  <%
-    String content = request.getParameter("content");
-    if (content == null || content.isEmpty()) {
-      content = "index.jsp"; // Default page if no content is provided
-    }
-  %>
-  <jsp:include page="<%= content %>" />
-</div>
+<main>
+    <!-- Dynamic content will be inserted here -->
+    <jsp:include page="${content}"/>
+</main>
 
-<%@ include file="templet/footer.jsp" %>
-
+<c:if test="${empty isAuthPage}">
+    <!-- Include footer for non-auth pages -->
+    <footer>
+        <%@ include file="templet/footer.jsp" %>
+    </footer>
+</c:if>
 </body>
 </html>
-
-
