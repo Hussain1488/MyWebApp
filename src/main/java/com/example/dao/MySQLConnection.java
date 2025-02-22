@@ -14,13 +14,19 @@ public class MySQLConnection {
     }
 
     public static String checkConnectionStatus() {
-        try (Connection connection = getConnection()) {
-            if (connection != null && !connection.isClosed()) {
-                return "MySQL Connection: Successful";
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver"); // Ensure driver is loaded
+            try (Connection connection = getConnection()) {
+                if (connection != null && !connection.isClosed()) {
+                    return "MySQL Connection: Successful";
+                }
             }
+        } catch (ClassNotFoundException e) {
+            return "MySQL Connection: Failed - Driver not found: " + e;
         } catch (SQLException e) {
-            return "MySQL Connection: Failed - " + e.getMessage();
+            return "MySQL Connection: Failed - " + e;
         }
         return "MySQL Connection: Unknown Status";
     }
+
 }
