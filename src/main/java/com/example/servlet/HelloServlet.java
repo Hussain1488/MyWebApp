@@ -1,39 +1,32 @@
 package com.example.servlet;
 
-import com.example.dao.MySQLConnection;
 import com.example.dao.MongoDBConnection;
-import com.mongodb.client.MongoClient;
+import com.example.dao.MySQLConnection;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.logging.Logger;
 
-@WebServlet("/hello") // Maps the servlet to the URL "/hello"
+@WebServlet("/hello")
 public class HelloServlet extends HttpServlet {
+    private static final Logger logger = Logger.getLogger(HelloServlet.class.getName());
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         // Test MySQL Connection
-        try {
-            Connection mysqlConn = MySQLConnection.getConnection();
-            response.getWriter().println("MySQL Connection Successful!");
-            mysqlConn.close(); // Close the connection
-        } catch (SQLException e) {
-            response.getWriter().println("MySQL Error: " + e.getMessage());
-        }
+        String mysqlStatus = MySQLConnection.checkConnectionStatus();
+        response.getWriter().println(mysqlStatus);
+        logger.info(mysqlStatus);
 
-//         Test MongoDB Connection
-        try {
-            MongoClient mongoClient = MongoDBConnection.getConnection();
-            response.getWriter().println("MongoDB Connection Successful!");
-            mongoClient.close(); // Close the connection
-        } catch (Exception e) {
-            response.getWriter().println("MongoDB Error: " + e.getMessage());
-        }
+        // Test MongoDB Connection
+        String mongoStatus = MongoDBConnection.checkConnectionStatus();
+        response.getWriter().println(mongoStatus);
+        logger.info(mongoStatus);
     }
 }
