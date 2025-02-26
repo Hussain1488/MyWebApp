@@ -15,29 +15,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        try (Connection connection = MySQLConnection.getConnection()) {
-            UserDao userDao = new UserDao(connection);
 
-            // Check if an admin exists
-            if (!userDao.adminExists()) {
-                // Create a default admin user
-                UserEntity admin = new UserEntity();
-                admin.setUserName("admin");
-                admin.setFirstName("Admin");
-                admin.setLastName("User");
-                admin.setEmail("admin@example.com");
-                admin.setPassword("admin123");
-                admin.setPhone("1234567890");
-                admin.setRole("admin");
-
-                userDao.createAdmin(admin);
-                System.out.println("Admin user created successfully!");
-            } else {
-                System.out.println("Admin user already exists.");
-            }
-        } catch (SQLException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
 
 
 //        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
