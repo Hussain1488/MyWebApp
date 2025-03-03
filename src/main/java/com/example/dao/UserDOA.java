@@ -18,7 +18,7 @@ public interface UserDOA {
 
     UserEntity updateUser(UserEntity user) throws SQLException;
 
-    boolean deleteUser(UserEntity user) throws SQLException;
+    boolean deleteUser(int user) throws SQLException;
 
     UserEntity getUserByEmailAndPassword(String email, String password) throws SQLException;
 

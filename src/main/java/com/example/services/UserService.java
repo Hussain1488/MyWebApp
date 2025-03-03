@@ -86,4 +86,17 @@ public class UserService {
     public List<UserEntity> getUsersWithPagination(int limit, int offset) throws SQLException {
         return userDAO.getUsersWithLimit(limit, offset);
     }
+
+    public UserEntity findUserById(int userId) throws SQLException {
+        return userDAO.getUserById(userId);
+    }
+
+    public boolean deleteUser(int userId) throws SQLException {
+        return userDAO.deleteUser(userId);
+    }
+
+    public UserEntity updateUser(UserEntity user) throws SQLException {
+        UserEntity updatedUser = userDAO.updateUser(user);
+        return updatedUser;
+    }
 }

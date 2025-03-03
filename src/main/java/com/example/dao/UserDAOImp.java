@@ -157,11 +157,10 @@ public class UserDAOImp implements UserDOA {
     }
 
     @Override
-    public boolean deleteUser(UserEntity user) throws SQLException {
-        String query = "DELETE FROM users WHERE id = ?";
-
+    public boolean deleteUser(int userId) throws SQLException {
+        String query = "DELETE FROM users WHERE user_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, user.getUserId());
+            statement.setInt(1, userId);
             return statement.executeUpdate() > 0; // Return true if delete was successful
         }
     }
