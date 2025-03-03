@@ -16,9 +16,10 @@ public class UserEntity {
     protected Timestamp createdOn;
     Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
+
     //---------->   Default constructor
-    public UserEntity() {
-    }
+    public UserEntity() {}
+
 
     //---------->   Parameterized constructor
     public UserEntity(int userId, String userName, String firstName, String lastName, String password, String email, String phone) {
@@ -29,8 +30,7 @@ public class UserEntity {
         this.password = password;
         this.email = email;
         this.phone = phone;
-        this.role = "customer";
-    }
+        this.role = "customer";}
 
 
     //---------->   Getters for User Entities
@@ -46,9 +46,7 @@ public class UserEntity {
         return firstName;
     }
 
-    public String getLastName() {
-        return lastName;
-    }
+    public String getLastName() {return lastName;}
 
     public String getPassword() {
         return password;
@@ -67,11 +65,11 @@ public class UserEntity {
     }
 
     public Timestamp getUpdatedOn() {
-        return currentTimestamp;
+        return updatedOn;
     }
 
     public Timestamp getCreatedOn() {
-        return currentTimestamp;
+        return createdOn;
     }
 
 
@@ -106,5 +104,24 @@ public class UserEntity {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public void setUpdatedOn(Timestamp date){this.updatedOn = date;}
+
+    public void setCreatedOn(Timestamp date){this.createdOn = date;}
+
+    public void getUserDetails() {
+        System.out.println("Your Detaisl :");
+        System.out.println("User ID: " + userId);
+        System.out.println("User Name: " + userName);
+        System.out.println("First Name: " + firstName);
+        System.out.println("Last Name: " + lastName);
+        System.out.println("Password: " + password);
+        System.out.println("Email: " + email);
+        System.out.println("Phone: " + phone);
+        System.out.println("Role: " + role);
+        System.out.println("Updated On: " + updatedOn);
+        System.out.println("Created On: " + createdOn);
+
     }
 }

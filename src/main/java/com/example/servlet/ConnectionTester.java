@@ -12,11 +12,11 @@ public class ConnectionTester {
         // Test MySQL Connection
         String mysqlStatus = MySQLConnection.checkConnectionStatus();
         System.out.println(mysqlStatus); // Print to terminal
-        logger.info(mysqlStatus);
+//        logger.info(mysqlStatus);
 
         // Test MongoDB Connection
         String mongoStatus = MongoDBConnection.checkConnectionStatus();
         System.out.println(mongoStatus); // Print to terminal
-        logger.info(mongoStatus);
+//        logger.info(mongoStatus);
     }
 }
