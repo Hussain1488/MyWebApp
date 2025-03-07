@@ -41,7 +41,6 @@ CREATE TABLE orders (
     user_id INT NOT NULL,
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     total_amount DECIMAL(10, 2) DEFAULT 0.00,
-    paid_amount decimal(10, 2) default 0.00,
     status ENUM('PENDING', 'PROCESSING', 'DELIVERED', 'CANCELLED') DEFAULT 'PENDING',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -68,16 +67,13 @@ DROP TABLE products ;
 
 --    --> Creating order items table <-- 
 CREATE TABLE order_items (
-    item_id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT,
-    order_id INT,
-    quantity INT,
-    price INT NOT NULL,
-    total_price INT NOT NULL,
-    FOREIGN KEY (product_id)
-        REFERENCES products (product_id),
-    FOREIGN KEY (order_id)
-        REFERENCES orders (order_id)
+    order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 drop table order_items;
 
