@@ -1,44 +1,92 @@
 package com.example.Entities;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class OrderEntity {
     private int orderId;
     private int userId;
-    private Timestamp orderDate;
+    private String status;
     private double totalAmount;
-    private String status; // PENDING, PROCESSING, DELIVERED, CANCELLED
+    private double paidAmount;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private List<OrderItemEntity> orderItems;
 
-    // Constructor, Getters, and Setters
-    public OrderEntity() {}
-
-    public OrderEntity(int userId, double totalAmount, String status) {
+    public OrderEntity(int orderId, int userId, String status, double totalAmount, double paidAmount, Timestamp createdAt, Timestamp updatedAt, List<OrderItemEntity> orderItems) {
+        this.orderId = orderId;
         this.userId = userId;
+        this.status = status;
         this.totalAmount = totalAmount;
+        this.paidAmount = paidAmount;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.orderItems = orderItems;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    // Getters and Setters
-    public int getOrderId() { return orderId; }
-    public void setOrderId(int orderId) { this.orderId = orderId; }
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
 
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
+    public void setPaidAmount(double paidAmount) {
+        this.paidAmount = paidAmount;
+    }
 
-    public Timestamp getOrderDate() { return orderDate; }
-    public void setOrderDate(Timestamp orderDate) { this.orderDate = orderDate; }
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
 
-    public double getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setOrderItems(List<OrderItemEntity> orderItems) {
+        this.orderItems = orderItems;
+    }
 
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+    public int getOrderId() {
+        return orderId;
+    }
 
-    public Timestamp getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
+    public int getUserId() {
+        return userId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public double getPaidAmount() {
+        return paidAmount;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public List<OrderItemEntity> getOrderItems() {
+        return orderItems;
+    }
+
+
 }

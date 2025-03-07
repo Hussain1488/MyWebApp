@@ -1,65 +1,72 @@
 package com.example.services;
 
 import com.example.Entities.OrderEntity;
+import com.example.Entities.OrderItemEntity;
 import com.example.dao.OrderDao;
-import com.example.dao.TransactionDao;
+import com.example.dao.OrderItemDao;
+
 import java.sql.SQLException;
 import java.util.List;
 
 public class OrderService {
-
     private final OrderDao orderDao;
-    private final TransactionDao transactionDao;
+    private final OrderItemDao orderItemDao;
 
     public OrderService() throws SQLException {
         this.orderDao = new OrderDao();
-        this.transactionDao = new TransactionDao();
+        this.orderItemDao = new OrderItemDao();
     }
 
-    public boolean createOrder(OrderEntity order) throws SQLException {
-        // Check if the user has any unpaid orders
-        if (hasUnpaidOrders(order.getUserId())) {
-            System.out.println("You have an unpaid order. Please pay for it before creating a new order.");
-            return false;
+    public int createNewOrder(int userId) throws SQLException {
+        OrderEntity existingOrder = orderDao.findUnpaidOrderByUserId(userId);
+        if (existingOrder != null) {
+            return existingOrder.getOrderId();
         }
-        return orderDao.createOrder(order);
+
+        OrderEntity newOrder = new OrderEntity();
+        newOrder.setUserId(userId);
+        newOrder.setStatus("PENDING");
+        newOrder.setTotalAmount(0);
+        newOrder.setPaidAmount(0);
+        return orderDao.createOrder(newOrder);
     }
 
-    public boolean updateOrder(OrderEntity order) throws SQLException {
-        // Only allow updates if the order is not delivered
-        if (order.getStatus().equals("DELIVERED")) {
-            System.out.println("Cannot update a delivered order.");
-            return false;
-        }
-        return orderDao.updateOrder(order);
+    public boolean addProductToOrder(int orderId, int productId, int quantity, double price) throws SQLException {
+        OrderItemEntity orderItem = new OrderItemEntity();
+        orderItem.setOrderId(orderId);
+        orderItem.setProductId(productId);
+        orderItem.setQuantity(quantity);
+        orderItem.setPrice(price);
+        return orderItemDao.addOrderItem(orderItem);
+    }
+
+    public boolean updateOrderItem(int orderItemId, int quantity, double price) throws SQLException {
+        OrderItemEntity item = new OrderItemEntity();
+        item.setOrderItemId(orderItemId);
+        item.setQuantity(quantity);
+        item.setPrice(price);
+        return orderItemDao.updateOrderItem(item);
     }
 
     public boolean deleteOrder(int orderId) throws SQLException {
-        // Only allow deletion if the order is not delivered
         OrderEntity order = orderDao.findOrderById(orderId);
-        if (order != null && order.getStatus().equals("DELIVERED")) {
-            System.out.println("Cannot delete a delivered order.");
+        if (order == null || order.getStatus().equals("DELIVERED")) {
             return false;
         }
         return orderDao.deleteOrder(orderId);
     }
 
-    public boolean hasUnpaidOrders(int userId) throws SQLException {
-        List<OrderEntity> orders = orderDao.getOrdersByUserId(userId);
-        for (OrderEntity order : orders) {
-            double totalPaid = transactionDao.getTotalPaidAmount(order.getOrderId());
-            if (totalPaid < order.getTotalAmount()) {
-                return true; // Unpaid order found
-            }
+    public boolean payOrder(int orderId, double paymentAmount) throws SQLException {
+        OrderEntity order = orderDao.findOrderById(orderId);
+        if (order == null || order.getStatus().equals("DELIVERED")) {
+            return false;
         }
-        return false; // No unpaid orders
-    }
 
-    public List<OrderEntity> getOrdersByUserId(int userId) throws SQLException {
-        return orderDao.getOrdersByUserId(userId);
-    }
-
-    public OrderEntity findOrderById(int orderId) throws SQLException {
-        return orderDao.findOrderById(orderId);
+        double newPaidAmount = order.getPaidAmount() + paymentAmount;
+        if (newPaidAmount >= order.getTotalAmount()) {
+            order.setStatus("PAID");
+        }
+        order.setPaidAmount(newPaidAmount);
+        return orderDao.updateOrder(order);
     }
 }
