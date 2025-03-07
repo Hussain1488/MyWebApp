@@ -8,9 +8,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
-public class AdminController {
-    private Scanner sc;
-    private UserEntity user;
+public class AdminController extends UserController {
+    final private Scanner sc;
+    final private UserEntity user;
     private UserService userService;
 
     public AdminController(UserEntity user, Scanner sc) {
@@ -23,10 +23,11 @@ public class AdminController {
         }
     }
 
-    public void menu() {
+    public void menu() throws SQLException {
         boolean exit = false;
         while (!exit) {
-            System.out.println("Admin Menu:\n-->(1) For Users Operations \n-->(2) For Orders Operations \n-->(0) Back");
+            System.out.println("Admin Menu:\n-->(1) For Users Operations \n-->(2) For Products" +
+                    " \n-->(3) For Orders \n-->(0) Back");
             int option = sc.nextInt();
             sc.nextLine(); // Consume the newline character
 
@@ -35,6 +36,10 @@ public class AdminController {
                     userMenu();
                     break;
                 case 2:
+                    ProductController productController = new ProductController(sc, user);
+                    productController.menu();
+                    break;
+                case 3:
                     System.out.println("Orders operations not implemented yet.");
                     break;
                 case 0:
@@ -53,9 +58,7 @@ public class AdminController {
         boolean exit = false;
 
         while (!exit) {
-            System.out.println("User Operations Menu:\n-->(1) Update Phone Number \n-->(2) Change Password \n-->(3) List of Users" +
-                    " \n-->(4) Find a User \n-->(5) For Delete User Operations \n-->(6) Edit User" +
-                    "\n-->(7) Create User\n-->(0) Back to Admin Menu");
+            System.out.println("User Operations Menu:\n-->(1) Update Phone Number \n-->(2) Change Password \n-->(3) List of Users" + " \n-->(4) Find a User \n-->(5) For Delete User Operations \n-->(6) Edit User" + "\n-->(7) Create User\n-->(0) Back to Admin Menu");
             System.out.print("Enter your choice: ");
 
             while (!sc.hasNextInt()) {
@@ -163,8 +166,7 @@ public class AdminController {
             // Display the users
             System.out.println("Users List (Page " + (offset / limit + 1) + "):");
             for (UserEntity user : users) {
-                System.out.println("ID: " + user.getUserId() + ", Name: " + user.getFirstName() + " " + user.getLastName() +
-                        ", Email: " + user.getEmail() + ", Role: " + user.getRole());
+                System.out.println("ID: " + user.getUserId() + ", Name: " + user.getFirstName() + " " + user.getLastName() + ", Email: " + user.getEmail() + ", Role: " + user.getRole());
             }
 
             // Prompt the user for input

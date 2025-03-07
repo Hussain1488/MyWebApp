@@ -18,26 +18,26 @@ public class UserController {
     }
 
     public UserEntity createUser(Scanner sc) {
-        System.out.println("For Creating User, Please enter your details:");
+        System.out.println("For Creating User, Please enter user details:");
 
         UserEntity user = new UserEntity();
 
-        System.out.print("Insert your username: ");
+        System.out.print("Insert username: ");
         user.setUserName(sc.nextLine());
 
-        System.out.print("Insert your first name: ");
+        System.out.print("Insert first name: ");
         user.setFirstName(sc.nextLine());
 
-        System.out.print("Insert your last name: ");
+        System.out.print("Insert last name: ");
         user.setLastName(sc.nextLine());
 
-        System.out.print("Insert your email address: ");
+        System.out.print("Insert email address: ");
         user.setEmail(sc.nextLine());
 
-        System.out.print("Insert your password: ");
+        System.out.print("Insert password: ");
         user.setPassword(sc.nextLine());
 
-        System.out.print("Insert your phone number: ");
+        System.out.print("Insert phone number: ");
         user.setPhone(sc.nextLine());
 
         // Save user to database

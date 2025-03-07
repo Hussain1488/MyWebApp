@@ -6,14 +6,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDAOImp implements UserDOA {
+public class UserDAOImp extends DOA implements UserDOA {
 
-    private Connection connection;
-    Timestamp currentTimestamp;
 
-    public UserDAOImp(Connection connection) throws SQLException {
-        this.connection = MySQLConnection.getConnection();
-        currentTimestamp = new Timestamp(System.currentTimeMillis());
+    public UserDAOImp() throws SQLException {
+        super();
     }
 
     // Check if an admin user exists

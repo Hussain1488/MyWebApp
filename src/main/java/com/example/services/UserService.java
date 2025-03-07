@@ -3,6 +3,7 @@ package com.example.services;
 import com.example.Entities.UserEntity;
 import com.example.dao.MySQLConnection;
 import com.example.dao.UserDAOImp;
+import com.example.dao.UserDOA;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -12,11 +13,15 @@ import java.util.List;
 
 public class UserService {
     private UserDAOImp userDAO;
-    Connection connection;
+
 
     public UserService() throws SQLException {
-        connection = MySQLConnection.getConnection();
-        this.userDAO = new UserDAOImp(connection); // Ensure UserDAOImp is initialized
+        this.userDAO = new UserDAOImp(); // Ensure UserDAOImp is initialized
+
+    }
+
+    public UserService(UserDAOImp userDAO) throws SQLException {
+        this.userDAO = userDAO; // Ensure UserDAOImp is initialized
     }
 
     public UserEntity registerUser(UserEntity newUser) throws SQLException {

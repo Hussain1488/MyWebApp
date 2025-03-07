@@ -18,7 +18,8 @@ public class UserEntity {
 
 
     //---------->   Default constructor
-    public UserEntity() {}
+    public UserEntity() {
+    }
 
 
     //---------->   Parameterized constructor
@@ -30,7 +31,8 @@ public class UserEntity {
         this.password = password;
         this.email = email;
         this.phone = phone;
-        this.role = "customer";}
+        this.role = "customer";
+    }
 
 
     //---------->   Getters for User Entities
@@ -46,7 +48,9 @@ public class UserEntity {
         return firstName;
     }
 
-    public String getLastName() {return lastName;}
+    public String getLastName() {
+        return lastName;
+    }
 
     public String getPassword() {
         return password;
@@ -106,9 +110,13 @@ public class UserEntity {
         this.role = role;
     }
 
-    public void setUpdatedOn(Timestamp date){this.updatedOn = date;}
+    public void setUpdatedOn(Timestamp date) {
+        this.updatedOn = date;
+    }
 
-    public void setCreatedOn(Timestamp date){this.createdOn = date;}
+    public void setCreatedOn(Timestamp date) {
+        this.createdOn = date;
+    }
 
     public void getUserDetails() {
         System.out.println("Your Detaisl :");
