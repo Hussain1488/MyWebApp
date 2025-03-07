@@ -1,6 +1,9 @@
 package com.example;
 
 
+import com.example.Entities.UserEntity;
+import com.example.controllers.AdminController;
+import com.example.controllers.CustomerController;
 import com.example.controllers.UserController;
 import com.example.servlet.ConnectionTester;
 
@@ -29,7 +32,17 @@ public class Main {
                     db.testConnections();
                     break;
                 case 2:
-                    userController.Login(sc); // Pass the Scanner object
+                    UserEntity user = userController.Login(sc);
+                    if (user != null) {
+                        if (user.getRole().equals("admin")) {
+                            AdminController adminController = new AdminController(user, sc);
+                            adminController.menu();
+                        } else {
+                            CustomerController customerController = new CustomerController(user, sc);
+                            customerController.menu();
+                        }
+                    }
+
                     break;
                 case 3:
                     userController.createUser(sc); // Pass the Scanner object

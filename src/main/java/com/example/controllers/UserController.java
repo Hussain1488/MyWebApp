@@ -58,7 +58,7 @@ public class UserController {
         return null;
     }
 
-    public void Login(Scanner sc) throws SQLException {
+    public UserEntity Login(Scanner sc) throws SQLException {
         System.out.print("Please Insert Your Email: ");
         String email = sc.nextLine();
         System.out.print("Insert your password: ");
@@ -67,17 +67,12 @@ public class UserController {
         UserEntity user = userService.authenticateUser(email, password);
         if (user == null) {
             System.out.println("Error: User not found.");
+            return null;
         } else {
             user.getUserDetails();
             System.out.println("Successfully logged in!");
             System.out.println("Welcome Back: " + user.getFirstName() + ' ' + user.getLastName());
-            if (user.getRole().equals("admin")) {
-                AdminController admin = new AdminController(user, sc);
-                admin.menu(); // Navigate to admin menu
-            } else {
-                // Handle regular user menu
-                System.out.println("User menu not implemented yet.");
-            }
+           return user;
         }
     }
 
