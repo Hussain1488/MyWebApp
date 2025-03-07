@@ -41,6 +41,7 @@ CREATE TABLE orders (
     user_id INT,
     price INT NOT NULL,
     final_price INT NOT NULL,
+    status enum('waiting','submited','delivered') default 'waiting',
     paid_amount int not null default 0,
     discount TINYINT NOT NULL,
     create_at DATETIME NOT NULL,
@@ -97,6 +98,8 @@ CREATE TABLE transactions (
 );
 -- DROP TABLE transactions;
 
+
+DROP TABLE transactions;
 DROP TABLE address;
 DROP TABLE order_items;
 DROP TABLE orders;
