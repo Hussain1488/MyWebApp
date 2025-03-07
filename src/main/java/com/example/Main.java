@@ -1,6 +1,6 @@
 package com.example;
 
-import com.example.Entities.UserEntity;
+
 import com.example.controllers.UserController;
 import com.example.servlet.ConnectionTester;
 

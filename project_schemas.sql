@@ -38,16 +38,14 @@ FROM
 --    --> Creating order table <-- 
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    price INT NOT NULL,
-    final_price INT NOT NULL,
-    status enum('waiting','submited','delivered') default 'waiting',
-    paid_amount int not null default 0,
-    discount TINYINT NOT NULL,
-    create_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
-    FOREIGN KEY (user_id)
-        REFERENCES users (user_id)
+    user_id INT NOT NULL,
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    total_amount DECIMAL(10, 2) DEFAULT 0.00,
+    paid_amount decimal(10, 2) default 0.00,
+    status ENUM('PENDING', 'PROCESSING', 'DELIVERED', 'CANCELLED') DEFAULT 'PENDING',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 DROP TABLE orders;
 
@@ -87,14 +85,11 @@ drop table order_items;
 --    --> Creating transactions table <-- 
 
 CREATE TABLE transactions (
-    trans_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT,
-    amount INT NOT NULL,
-    status ENUM('pending', 'paid'),
-    description VARCHAR(256),
-    create_at DATETIME NOT NULL,
-    FOREIGN KEY (order_id)
-        REFERENCES orders (order_id)
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 -- DROP TABLE transactions;
 
