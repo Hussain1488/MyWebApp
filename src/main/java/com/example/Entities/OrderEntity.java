@@ -23,6 +23,13 @@ public class OrderEntity {
         this.updatedAt = updatedAt;
         this.orderItems = orderItems;
     }
+    public OrderEntity() {}
+
+    public OrderEntity(int userId, double totalAmount, String status) {
+        this.userId = userId;
+        this.totalAmount = totalAmount;
+        this.status = status;
+    }
 
     public void setOrderId(int orderId) {
         this.orderId = orderId;

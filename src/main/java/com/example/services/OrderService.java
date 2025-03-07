@@ -1,72 +1,61 @@
 package com.example.services;
 
 import com.example.Entities.OrderEntity;
-import com.example.Entities.OrderItemEntity;
+import com.example.Entities.TransactionEntity;
 import com.example.dao.OrderDao;
-import com.example.dao.OrderItemDao;
-
+import com.example.dao.TransactionDao;
 import java.sql.SQLException;
 import java.util.List;
 
 public class OrderService {
     private final OrderDao orderDao;
-    private final OrderItemDao orderItemDao;
+    private final TransactionDao transactionDao;
 
     public OrderService() throws SQLException {
         this.orderDao = new OrderDao();
-        this.orderItemDao = new OrderItemDao();
+        this.transactionDao = new TransactionDao();
     }
 
-    public int createNewOrder(int userId) throws SQLException {
-        OrderEntity existingOrder = orderDao.findUnpaidOrderByUserId(userId);
-        if (existingOrder != null) {
-            return existingOrder.getOrderId();
-        }
-
-        OrderEntity newOrder = new OrderEntity();
-        newOrder.setUserId(userId);
-        newOrder.setStatus("PENDING");
-        newOrder.setTotalAmount(0);
-        newOrder.setPaidAmount(0);
-        return orderDao.createOrder(newOrder);
+    // Check if the user has any unpaid orders
+    public boolean hasUnpaidOrders(int userId) throws SQLException {
+        List<OrderEntity> unpaidOrders = orderDao.getUnpaidOrders(userId);
+        return !unpaidOrders.isEmpty();
     }
 
-    public boolean addProductToOrder(int orderId, int productId, int quantity, double price) throws SQLException {
-        OrderItemEntity orderItem = new OrderItemEntity();
-        orderItem.setOrderId(orderId);
-        orderItem.setProductId(productId);
-        orderItem.setQuantity(quantity);
-        orderItem.setPrice(price);
-        return orderItemDao.addOrderItem(orderItem);
+    // Get all orders for a specific user
+    public List<OrderEntity> getOrdersByUserId(int userId) throws SQLException {
+        return orderDao.getOrdersByUserId(userId);
     }
 
-    public boolean updateOrderItem(int orderItemId, int quantity, double price) throws SQLException {
-        OrderItemEntity item = new OrderItemEntity();
-        item.setOrderItemId(orderItemId);
-        item.setQuantity(quantity);
-        item.setPrice(price);
-        return orderItemDao.updateOrderItem(item);
+    // Get an order by its ID
+    public OrderEntity getOrderById(int orderId) throws SQLException {
+        return orderDao.getOrderById(orderId);
     }
 
-    public boolean deleteOrder(int orderId) throws SQLException {
-        OrderEntity order = orderDao.findOrderById(orderId);
-        if (order == null || order.getStatus().equals("DELIVERED")) {
-            return false;
-        }
-        return orderDao.deleteOrder(orderId);
+    // Add a payment for an order
+    public boolean addPayment(int orderId, double amount) throws SQLException {
+        return transactionDao.addTransaction(new TransactionEntity(orderId, amount));
     }
 
-    public boolean payOrder(int orderId, double paymentAmount) throws SQLException {
-        OrderEntity order = orderDao.findOrderById(orderId);
-        if (order == null || order.getStatus().equals("DELIVERED")) {
-            return false;
-        }
+    // Calculate the outstanding balance for an order
+    public double getOutstandingBalance(int orderId) throws SQLException {
+        double totalAmount = orderDao.getOrderById(orderId).getTotalAmount();
+        double paidAmount = transactionDao.getTotalPaid(orderId);
+        return totalAmount - paidAmount;
+    }
 
-        double newPaidAmount = order.getPaidAmount() + paymentAmount;
-        if (newPaidAmount >= order.getTotalAmount()) {
-            order.setStatus("PAID");
-        }
-        order.setPaidAmount(newPaidAmount);
+    // Create a new order
+    public boolean createOrder(OrderEntity order) throws SQLException {
+        return orderDao.createOrder(order);
+    }
+
+    // Update an existing order
+    public boolean updateOrder(OrderEntity order) throws SQLException {
         return orderDao.updateOrder(order);
+    }
+
+    // Delete an order
+    public boolean deleteOrder(int orderId) throws SQLException {
+        return orderDao.deleteOrder(orderId);
     }
 }

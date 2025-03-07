@@ -1,6 +1,8 @@
 package com.example.controllers;
 
+import com.example.Entities.OrderEntity;
 import com.example.services.OrderService;
+import com.mysql.cj.x.protobuf.MysqlxCrud;
 
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -16,8 +18,11 @@ public class OrderController {
 
     public void handleOrderCreation(int userId) {
         try {
-            int orderId = orderService.createNewOrder(userId);
-            System.out.println("Order created with ID: " + orderId);
+
+            OrderEntity order = new OrderEntity();
+            order.setUserId(userId);
+            boolean isCreated = orderService.createOrder(order);
+            System.out.println("Order created successfully: " + isCreated);
         } catch (SQLException e) {
             System.err.println("Error creating order: " + e.getMessage());
         }

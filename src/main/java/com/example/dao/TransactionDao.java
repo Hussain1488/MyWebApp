@@ -9,6 +9,7 @@ public class TransactionDao extends DOA {
         super();
     }
 
+    // Add a new transaction
     public boolean addTransaction(TransactionEntity transaction) throws SQLException {
         String query = "INSERT INTO transactions (order_id, amount) VALUES (?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -18,7 +19,8 @@ public class TransactionDao extends DOA {
         }
     }
 
-    public double getTotalPaidAmount(int orderId) throws SQLException {
+    // Get the total amount paid for an order
+    public double getTotalPaid(int orderId) throws SQLException {
         String query = "SELECT SUM(amount) AS total_paid FROM transactions WHERE order_id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, orderId);
@@ -29,5 +31,19 @@ public class TransactionDao extends DOA {
             }
         }
         return 0.0;
+    }
+
+    public double getTotalPaidAmount(int orderId) throws SQLException {
+        String query = "SELECT SUM(amount) AS total FROM transactions WHERE order_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, orderId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("total");
+                }
+            }
+
+        }
+        return 0;
     }
 }
