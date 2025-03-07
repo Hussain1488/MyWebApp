@@ -12,13 +12,13 @@ public class OrderItemDao extends DOA {
         super();
     }
 
-    public boolean addOrderItem(OrderItemEntity orderItem) throws SQLException {
+    public boolean addOrderItem(OrderItemEntity item) throws SQLException {
         String query = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, orderItem.getOrderId());
-            stmt.setInt(2, orderItem.getProductId());
-            stmt.setInt(3, orderItem.getQuantity());
-            stmt.setDouble(4, orderItem.getPrice());
+            stmt.setInt(1, item.getOrderId());
+            stmt.setInt(2, item.getProductId());
+            stmt.setInt(3, item.getQuantity());
+            stmt.setDouble(4, item.getPrice());
             return stmt.executeUpdate() > 0;
         }
     }

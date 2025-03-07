@@ -33,6 +33,8 @@ public class ProductEntity {
         this.updatedOn = currentTimestamp;
     }
 
+    public ProductEntity(){}
+
     // Getters and Setters
     public int getProductId() {
         return productId;

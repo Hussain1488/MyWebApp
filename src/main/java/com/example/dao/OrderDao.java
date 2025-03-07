@@ -50,6 +50,7 @@ public class OrderDao extends DOA {
                     order.setOrderId(rs.getInt("order_id"));
                     order.setUserId(rs.getInt("user_id"));
                     order.setTotalAmount(rs.getDouble("total_amount"));
+                    order.setPaidAmount(rs.getDouble("paid_amount"));
                     order.setStatus(rs.getString("status"));
                     order.setCreatedAt(rs.getTimestamp("created_at"));
                     order.setUpdatedAt(rs.getTimestamp("updated_at"));
@@ -71,6 +72,7 @@ public class OrderDao extends DOA {
                     order.setOrderId(rs.getInt("order_id"));
                     order.setUserId(rs.getInt("user_id"));
                     order.setTotalAmount(rs.getDouble("total_amount"));
+                    order.setPaidAmount(rs.getDouble("paid_amount"));
                     order.setStatus(rs.getString("status"));
                     order.setCreatedAt(rs.getTimestamp("created_at"));
                     order.setUpdatedAt(rs.getTimestamp("updated_at"));
@@ -115,10 +117,45 @@ public class OrderDao extends DOA {
 
     // Delete an order
     public boolean deleteOrder(int orderId) throws SQLException {
-        String query = "DELETE FROM orders WHERE order_id = ? AND status != 'DELIVERED'";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, orderId);
-            return stmt.executeUpdate() > 0;
+        // Step 1: Check the order status
+        String checkOrderStatusQuery = "SELECT status FROM orders WHERE order_id = ?";
+        try (PreparedStatement checkOrderStatusStmt = connection.prepareStatement(checkOrderStatusQuery)) {
+            checkOrderStatusStmt.setInt(1, orderId);
+            try (ResultSet rs = checkOrderStatusStmt.executeQuery()) {
+                if (rs.next()) {
+                    String status = rs.getString("status");
+
+                    // Step 2: Proceed only if the order status is not DELIVERED
+                    if (!"DELIVERED".equals(status)) {
+                        // Step 3: Delete related records in the order_items table
+                        String deleteOrderItemsQuery = "DELETE FROM order_items WHERE order_id = ?";
+                        try (PreparedStatement deleteOrderItemsStmt = connection.prepareStatement(deleteOrderItemsQuery)) {
+                            deleteOrderItemsStmt.setInt(1, orderId);
+                            deleteOrderItemsStmt.executeUpdate(); // Delete all related order items
+                        }
+
+                        // Step 4: Delete related records in the transactions table
+                        String deleteOrderTransactionsQuery = "DELETE FROM transactions WHERE order_id = ?";
+                        try (PreparedStatement deleteOrderTransactionsStmt = connection.prepareStatement(deleteOrderTransactionsQuery)) {
+                            deleteOrderTransactionsStmt.setInt(1, orderId);
+                            deleteOrderTransactionsStmt.executeUpdate(); // Delete all related transactions
+                        }
+
+                        // Step 5: Delete the order from the orders table
+                        String deleteOrderQuery = "DELETE FROM orders WHERE order_id = ?";
+                        try (PreparedStatement deleteOrderStmt = connection.prepareStatement(deleteOrderQuery)) {
+                            deleteOrderStmt.setInt(1, orderId);
+                            return deleteOrderStmt.executeUpdate() > 0; // Delete the order
+                        }
+                    } else {
+                        System.out.println("Cannot delete a delivered order.");
+                        return false; // Order status is DELIVERED, so do not proceed
+                    }
+                } else {
+                    System.out.println("Order not found.");
+                    return false; // Order does not exist
+                }
+            }
         }
     }
 }

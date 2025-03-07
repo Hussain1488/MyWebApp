@@ -1,9 +1,14 @@
 package com.example.controllers;
 
 import com.example.Entities.OrderEntity;
+import com.example.Entities.OrderItemEntity;
+import com.example.Entities.ProductEntity;
 import com.example.Entities.UserEntity;
+import com.example.dao.ProductDao;
 import com.example.services.OrderService;
 import com.example.services.OrderItemService;
+import com.example.services.ProductService;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
@@ -14,6 +19,7 @@ public class CustomerController {
     private final OrderService orderService;
     private final OrderItemService orderItemService;
     private final UserEntity customer;
+    final private ProductService productService = new ProductService();
 
     public CustomerController(UserEntity customer, Scanner scanner) throws SQLException {
         this.scanner = scanner;
@@ -97,6 +103,7 @@ public class CustomerController {
             for (OrderEntity order : orders) {
                 System.out.println("Order ID: " + order.getOrderId());
                 System.out.println("Total Amount: " + order.getTotalAmount());
+                System.out.println("Paid Amount: " + order.getPaidAmount());
                 System.out.println("Status: " + order.getStatus());
                 System.out.println("Created At: " + order.getCreatedAt());
                 System.out.println("Updated At: " + order.getUpdatedAt());
@@ -112,32 +119,48 @@ public class CustomerController {
         int orderId = scanner.nextInt();
         scanner.nextLine(); // Consume newline
 
-        boolean addingItems = true;
-        while (addingItems) {
-            System.out.print("Enter Product ID (0 to finish): ");
-            int productId = scanner.nextInt();
-            if (productId == 0) {
-                addingItems = false;
-                continue;
+        try {
+            OrderEntity order = orderService.getOrderById(orderId);
+            if (order == null || order.getUserId() != customer.getUserId()) {
+                System.out.println("Order not found or does not belong to you.");
+                return;
             }
 
-            System.out.print("Enter Quantity: ");
-            int quantity = scanner.nextInt();
+            boolean addingItems = true;
+            while (addingItems) {
+                System.out.print("Enter Product ID (0 to finish): ");
+                int productId = scanner.nextInt();
+                if (productId == 0) {
+                    addingItems = false;
+                    continue;
+                }
 
-            System.out.print("Enter Price per Unit: ");
-            double price = scanner.nextDouble();
-            scanner.nextLine(); // Consume newline
+                ProductEntity product = productService.findProductById(productId);
+                if (product == null) {
+                    System.out.println("Product not found.");
+                    return;
+                }
+                System.out.print("Enter Quantity: ");
+                int quantity = scanner.nextInt();
+                if (quantity <= 0) {
+                    System.out.println("Quantity must be greater than 0.");
+                    continue;
+                }
 
-            try {
-                OrderItemEntity item = new OrderItemEntity(orderId, productId, quantity, price);
+                scanner.nextLine(); // Consume newline
+
+                OrderItemEntity item = new OrderItemEntity(orderId, productId, quantity,product.getPrice() * quantity);
                 if (orderItemService.addItemToOrder(item)) {
+                    OrderEntity thisOrder = orderService.getOrderById(orderId);
+                    thisOrder.setTotalAmount(item.getPrice());
+                    orderService.updateOrder(thisOrder);
                     System.out.println("Item added successfully.");
                 } else {
                     System.out.println("Failed to add item.");
                 }
-            } catch (SQLException e) {
-                System.err.println("Error adding item: " + e.getMessage());
             }
+        } catch (SQLException e) {
+            System.err.println("Error adding item: " + e.getMessage());
         }
     }
 

@@ -23,7 +23,7 @@ public class Main {
 
         while (!wantToExit) {
             System.out.println("Please choose your option!");
-            System.out.println("-->(1) for installation, \n-->(2) for Logging in \n-->(3) for registration \n-->(4) for exit");
+            System.out.println("-->(1) for installation, \n-->(2) for Logging in \n-->(3) for registration \n-->(0) for exit");
             int option = sc.nextInt();
             sc.nextLine(); // Consume the newline character
 
@@ -41,13 +41,14 @@ public class Main {
                             CustomerController customerController = new CustomerController(user, sc);
                             customerController.menu();
                         }
+                    }else{
+                        System.out.println("Invalid username or password!");
                     }
-
                     break;
                 case 3:
                     userController.createUser(sc); // Pass the Scanner object
                     break;
-                case 4:
+                case 0:
                     System.out.println("Comeback Again!");
                     wantToExit = true; // Exit the loop
                     break;
@@ -68,6 +69,4 @@ public class Main {
         ConnectionTester connectionTester = new ConnectionTester();
         connectionTester.testConnections();
     }
-
-
 }

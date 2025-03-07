@@ -8,6 +8,7 @@ import java.util.List;
 
 public class ProductDao extends DOA {
 
+
     public ProductDao() throws SQLException {
         super();
     }
@@ -99,5 +100,22 @@ public class ProductDao extends DOA {
             }
         }
         return null;
+    }
+
+    public double getProductPrice(ProductEntity product) throws SQLException {
+        String query = "SELECT price FROM products WHERE product_id = ?";
+        double price = 0;
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, product.getProductId()); // Assuming product_id is an int
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    price = resultSet.getDouble("price");
+                }
+            }
+        }
+
+        return price;
     }
 }

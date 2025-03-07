@@ -20,4 +20,8 @@ public class OrderItemService {
     public List<OrderItemEntity> getOrderItemsByOrderId(int orderId) throws SQLException {
         return orderItemDao.getOrderItemsByOrderId(orderId);
     }
+
+    public boolean addItemToOrder(OrderItemEntity item) throws SQLException {
+        return orderItemDao.addOrderItem(item);
+    }
 }

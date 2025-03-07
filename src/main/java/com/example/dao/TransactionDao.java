@@ -11,11 +11,42 @@ public class TransactionDao extends DOA {
 
     // Add a new transaction
     public boolean addTransaction(TransactionEntity transaction) throws SQLException {
-        String query = "INSERT INTO transactions (order_id, amount) VALUES (?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, transaction.getOrderId());
-            stmt.setDouble(2, transaction.getAmount());
-            return stmt.executeUpdate() > 0;
+        // Start a transaction to ensure atomicity
+        connection.setAutoCommit(false);
+
+        try {
+            // Step 1: Insert the new transaction
+            String insertQuery = "INSERT INTO transactions (order_id, amount) VALUES (?, ?)";
+            try (PreparedStatement insertStmt = connection.prepareStatement(insertQuery)) {
+                insertStmt.setInt(1, transaction.getOrderId());
+                insertStmt.setDouble(2, transaction.getAmount());
+                int rowsInserted = insertStmt.executeUpdate();
+                if (rowsInserted <= 0) {
+                    connection.rollback(); // Rollback if insertion fails
+                    return false;
+                }
+            }
+
+            // Step 2: Update the paid_amount in the orders table
+            String updateQuery = "UPDATE orders SET paid_amount = paid_amount + ? WHERE order_id = ?";
+            try (PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
+                updateStmt.setDouble(1, transaction.getAmount());
+                updateStmt.setInt(2, transaction.getOrderId());
+                int rowsUpdated = updateStmt.executeUpdate();
+                if (rowsUpdated <= 0) {
+                    connection.rollback(); // Rollback if update fails
+                    return false;
+                }
+            }
+
+            // Commit the transaction if both operations succeed
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            connection.rollback(); // Rollback on any error
+            throw e;
+        } finally {
+            connection.setAutoCommit(true); // Reset auto-commit mode
         }
     }
 
