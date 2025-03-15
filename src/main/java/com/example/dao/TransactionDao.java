@@ -39,6 +39,14 @@ public class TransactionDao extends DOA {
                 }
             }
 
+            String updateStatusQuery = "UPDATE orders SET status = 'PAID'"+
+            "WHERE order_id = ? AND status NOT IN ('DELIVERED', 'CANCELED') AND paid_amount >= total_amount";
+
+            try (PreparedStatement updateStatusStmt = connection.prepareStatement(updateStatusQuery)) {
+                updateStatusStmt.setInt(1, transaction.getOrderId());
+                updateStatusStmt.executeUpdate(); // Update status if conditions are met
+            }
+
             // Commit the transaction if both operations succeed
             connection.commit();
             return true;

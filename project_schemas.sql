@@ -38,15 +38,18 @@ FROM
 --    --> Creating order table <-- 
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    total_amount DECIMAL(10, 2) DEFAULT 0.00,
-    status ENUM('PENDING', 'PROCESSING', 'DELIVERED', 'CANCELLED') DEFAULT 'PENDING',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    user_id INT,
+    status ENUM('PENDING', 'PAID', 'DELIVERED', 'CANCELLED') DEFAULT 'PENDING',
+    total_amount DECIMAL(10, 2),
+    paid_amount DECIMAL(10, 2) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+select * from orders;
+select * from transactions;
 DROP TABLE orders;
+
 
 --    --> Creating products table <-- 
 CREATE TABLE products (
@@ -60,21 +63,24 @@ CREATE TABLE products (
     updated_at DATETIME,
     created_at DATETIME
 );
-SELECT * FROM products;
-
 DROP TABLE products ;
 
 
 --    --> Creating order items table <-- 
 CREATE TABLE order_items (
     order_item_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT NOT NULL,
-    product_id INT NOT NULL,
-    quantity INT NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    price DECIMAL(10, 2),
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
+select * from orders;
+select * from order_items;
+SELECT * FROM products;
+
+
 drop table order_items;
 
 
@@ -91,11 +97,11 @@ CREATE TABLE transactions (
 
 
 DROP TABLE transactions;
-DROP TABLE address;
 DROP TABLE order_items;
 DROP TABLE orders;
 DROP TABLE users;
 
+use my_app;
 
 
 

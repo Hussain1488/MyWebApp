@@ -11,12 +11,14 @@ import com.example.services.ProductService;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class CustomerController {
 
     private final Scanner scanner;
     private final OrderService orderService;
+    private final OrderController orderController;
     private final OrderItemService orderItemService;
     private final UserEntity customer;
     final private ProductService productService = new ProductService();
@@ -26,20 +28,19 @@ public class CustomerController {
         this.orderService = new OrderService();
         this.orderItemService = new OrderItemService();
         this.customer = customer;
+        this.orderController = new OrderController(customer);
+
     }
 
     public void menu() {
         boolean exit = false;
         while (!exit) {
             System.out.println("\nCustomer Menu:");
-            System.out.println("1. Create New Order");
-            System.out.println("2. View My Orders");
-            System.out.println("3. Add Items to Order");
-            System.out.println("4. Update Order");
-            System.out.println("5. Delete Order");
-            System.out.println("6. Make Payment");
-            System.out.println("0. Logout");
-            System.out.print("Choose an option: ");
+            System.out.println("(1)--> User profile");
+            System.out.println("(2)--> My Orders");
+
+            System.out.println("(0)--> Logout");
+
 
             int option = scanner.nextInt();
             scanner.nextLine(); // Consume newline
@@ -49,21 +50,9 @@ public class CustomerController {
                     createOrder();
                     break;
                 case 2:
-                    viewOrders();
+                    orderController.menu();
                     break;
-                case 3:
-                    addItemsToOrder();
-                    break;
-                case 4:
-                    updateOrder();
-                    break;
-                case 5:
-                    deleteOrder();
-                    break;
-                case 6:
-                    processPayment();
-                    break;
-                case 0:
+                    case 0:
                     exit = true;
                     System.out.println("Logging out...");
                     break;
@@ -83,6 +72,17 @@ public class CustomerController {
             OrderEntity newOrder = new OrderEntity(customer.getUserId(), 0.0, "PENDING");
             if (orderService.createOrder(newOrder)) {
                 System.out.println("Order created successfully! Order ID: " + newOrder.getOrderId());
+                System.out.println("Wnat to add Items to the order? (1) --> yes, (0) --> no:");
+                boolean wantAddItem = scanner.nextInt() == 1;
+                if (wantAddItem) {
+                    addItemsToOrder(newOrder.getOrderId());
+                }
+
+                System.out.println("Want to make payments? (1) --> yes, (0) --> no:");
+                boolean wantPayment = scanner.nextInt() == 1;
+                if (wantPayment) {
+                    processPayment(newOrder.getOrderId());
+                }
             } else {
                 System.out.println("Failed to create order.");
             }
@@ -91,38 +91,28 @@ public class CustomerController {
         }
     }
 
-    private void viewOrders() {
-        try {
-            List<OrderEntity> orders = orderService.getOrdersByUserId(customer.getUserId());
-            if (orders.isEmpty()) {
-                System.out.println("No orders found.");
-                return;
-            }
+//    private void viewOrders() {
+//        try {
+//            orderController.handleOrderList(customer);
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
-            System.out.println("\nYour Orders:");
-            for (OrderEntity order : orders) {
-                System.out.println("Order ID: " + order.getOrderId());
-                System.out.println("Total Amount: " + order.getTotalAmount());
-                System.out.println("Paid Amount: " + order.getPaidAmount());
-                System.out.println("Status: " + order.getStatus());
-                System.out.println("Created At: " + order.getCreatedAt());
-                System.out.println("Updated At: " + order.getUpdatedAt());
-                System.out.println("-----------------------------");
-            }
-        } catch (SQLException e) {
-            System.err.println("Error fetching orders: " + e.getMessage());
-        }
-    }
-
-    private void addItemsToOrder() {
-        System.out.print("Enter Order ID: ");
-        int orderId = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+    private void addItemsToOrder(int orderId) {
+//        System.out.print("Enter Order ID: ");
+//        int orderId = scanner.nextInt();
+        System.out.println("\nAdding Items to order byId: " + orderId);
+//        scanner.nextLine();
 
         try {
             OrderEntity order = orderService.getOrderById(orderId);
             if (order == null || order.getUserId() != customer.getUserId()) {
                 System.out.println("Order not found or does not belong to you.");
+                return;
+            }
+            if (Objects.equals(order.getStatus(), "DELIVERED")) {
+                System.out.print("Order has been delivered. You can't update this order. Please make another order.");
                 return;
             }
 
@@ -149,10 +139,10 @@ public class CustomerController {
 
                 scanner.nextLine(); // Consume newline
 
-                OrderItemEntity item = new OrderItemEntity(orderId, productId, quantity,product.getPrice() * quantity);
+                OrderItemEntity item = new OrderItemEntity(orderId, productId, quantity, product.getPrice() * quantity);
                 if (orderItemService.addItemToOrder(item)) {
                     OrderEntity thisOrder = orderService.getOrderById(orderId);
-                    thisOrder.setTotalAmount(item.getPrice());
+                    thisOrder.setTotalAmount(thisOrder.getTotalAmount() + item.getPrice());
                     orderService.updateOrder(thisOrder);
                     System.out.println("Item added successfully.");
                 } else {
@@ -181,15 +171,21 @@ public class CustomerController {
                 return;
             }
 
-            System.out.print("Enter New Total Amount: ");
-            double totalAmount = scanner.nextDouble();
-            scanner.nextLine(); // Consume newline
 
-            System.out.print("Enter New Status (PENDING, PROCESSING, CANCELLED): ");
-            String status = scanner.nextLine();
+            System.out.print("Want to add items to order? (1) -> yes or (0) -> no: ");
+            int addItems = scanner.nextInt();
+            scanner.nextLine();
+            if (addItems == 1) {
+                addItemsToOrder(order.getOrderId());
+            }
 
-            order.setTotalAmount(totalAmount);
-            order.setStatus(status);
+            System.out.println("Want to make a payment? (1) -> yes or (0) -> no: ");
+            int payment = scanner.nextInt();
+            scanner.nextLine();
+            if (payment == 1) {
+                processPayment(order.getOrderId());
+            }
+
 
             if (orderService.updateOrder(order)) {
                 System.out.println("Order updated successfully.");
@@ -201,37 +197,12 @@ public class CustomerController {
         }
     }
 
-    private void deleteOrder() {
-        System.out.print("Enter Order ID: ");
-        int orderId = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
 
-        try {
-            OrderEntity order = orderService.getOrderById(orderId);
-            if (order == null || order.getUserId() != customer.getUserId()) {
-                System.out.println("Order not found or does not belong to you.");
-                return;
-            }
 
-            if (order.getStatus().equals("DELIVERED")) {
-                System.out.println("Cannot delete a delivered order.");
-                return;
-            }
-
-            if (orderService.deleteOrder(orderId)) {
-                System.out.println("Order deleted successfully.");
-            } else {
-                System.out.println("Failed to delete order.");
-            }
-        } catch (SQLException e) {
-            System.err.println("Error deleting order: " + e.getMessage());
-        }
-    }
-
-    private void processPayment() {
-        System.out.print("Enter Order ID: ");
-        int orderId = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+    private void processPayment(int orderId) {
+//        System.out.print("Enter Order ID: ");
+//        int orderId = scanner.nextInt();
+//        scanner.nextLine(); // Consume newline
 
         try {
             double outstanding = orderService.getOutstandingBalance(orderId);
@@ -243,7 +214,7 @@ public class CustomerController {
             System.out.printf("Outstanding Balance: %.2f%n", outstanding);
             System.out.print("Enter Payment Amount: ");
             double amount = scanner.nextDouble();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine();
 
             if (amount > outstanding) {
                 System.out.println("Payment amount exceeds outstanding balance.");

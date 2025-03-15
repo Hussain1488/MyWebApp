@@ -25,7 +25,7 @@ public class Main {
             System.out.println("Please choose your option!");
             System.out.println("-->(1) for installation, \n-->(2) for Logging in \n-->(3) for registration \n-->(0) for exit");
             int option = sc.nextInt();
-            sc.nextLine(); // Consume the newline character
+            sc.nextLine();
 
             switch (option) {
                 case 1:
