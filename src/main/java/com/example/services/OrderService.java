@@ -51,6 +51,7 @@ public class OrderService {
     public double getOutstandingBalance(int orderId) throws SQLException {
         double totalAmount = orderDao.getOrderById(orderId).getTotalAmount();
         double paidAmount = transactionDao.getTotalPaid(orderId);
+        System.out.println("Total amount"+totalAmount +". Paid amount "+ paidAmount);
         return totalAmount - paidAmount;
     }
 

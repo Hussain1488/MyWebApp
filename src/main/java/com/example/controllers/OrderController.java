@@ -33,12 +33,12 @@ public class OrderController {
     public void userMenu() {
         boolean exit = false;
         while (!exit) {
-            System.out.println("\nCustomer Menu:");
+            System.out.println("\nUser Order Menu:");
             System.out.println("(1)--> Create New Order");
             System.out.println("(2)--> View My Orders");
             System.out.println("(3)--> Update Order");
             System.out.println("(4)--> Delete Order");
-            System.out.println("(0)--> Logout");
+            System.out.println("(0)--> Main Menu");
 
 
             int option = scanner.nextInt();
@@ -159,14 +159,16 @@ public class OrderController {
 
                 OrderItemEntity item = new OrderItemEntity(orderId, productId, quantity, product.getPrice() * quantity);
                 if (orderItemService.addItemToOrder(item)) {
-                    OrderEntity thisOrder = orderService.getOrderById(orderId);
-                    thisOrder.setTotalAmount(thisOrder.getTotalAmount() + item.getPrice());
-                    orderService.updateOrder(thisOrder);
+
+                    order.setTotalAmount(order.getTotalAmount() + item.getPrice());
+
                     System.out.println("Item added successfully.");
                 } else {
                     System.out.println("Failed to add item.");
                 }
             }
+
+            orderService.updateOrder(order);
         } catch (SQLException e) {
             System.err.println("Error adding item: " + e.getMessage());
         }
@@ -205,11 +207,6 @@ public class OrderController {
             }
 
 
-            if (orderService.updateOrder(order)) {
-                System.out.println("Order updated successfully.");
-            } else {
-                System.out.println("Failed to update order.");
-            }
         } catch (SQLException e) {
             System.err.println("Error updating order: " + e.getMessage());
         }
