@@ -30,7 +30,7 @@ public class OrderController {
     }
 
 
-    public void menu() {
+    public void userMenu() {
         boolean exit = false;
         while (!exit) {
             System.out.println("\nCustomer Menu:");
@@ -120,10 +120,8 @@ public class OrderController {
     }
 
     private void addItemsToOrder(int orderId) {
-//        System.out.print("Enter Order ID: ");
-//        int orderId = scanner.nextInt();
+
         System.out.println("\nAdding Items to order byId: " + orderId);
-//        scanner.nextLine();
 
         try {
             OrderEntity order = orderService.getOrderById(orderId);
@@ -157,7 +155,7 @@ public class OrderController {
                     continue;
                 }
 
-                scanner.nextLine(); // Consume newline
+                scanner.nextLine();
 
                 OrderItemEntity item = new OrderItemEntity(orderId, productId, quantity, product.getPrice() * quantity);
                 if (orderItemService.addItemToOrder(item)) {
@@ -245,9 +243,7 @@ public class OrderController {
     }
 
     private void processPayment(int orderId) {
-//        System.out.print("Enter Order ID: ");
-//        int orderId = scanner.nextInt();
-//        scanner.nextLine(); // Consume newline
+
 
         try {
             double outstanding = orderService.getOutstandingBalance(orderId);
