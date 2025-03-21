@@ -2,14 +2,7 @@ CREATE DATABASE my_app;
 
 use my_app;
 
-SELECT 
-    *
-FROM
-    users;
-
-DELETE FROM users WHERE user_id > 0; -- Assuming 'id' is a primary key
-
-
+SET SQL_SAFE_UPDATES = 0;
 
 
 --  ****>  Creating Schemas <****  --
@@ -28,12 +21,6 @@ CREATE TABLE users (
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL    
 );
--- DROP TABLE users;
-
-SELECT 
-    *
-FROM
-    users;
 
 --    --> Creating order table <-- 
 CREATE TABLE orders (
@@ -46,10 +33,6 @@ CREATE TABLE orders (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
-select * from orders;
-select * from transactions;
-DROP TABLE orders;
-
 
 --    --> Creating products table <-- 
 CREATE TABLE products (
@@ -63,7 +46,6 @@ CREATE TABLE products (
     updated_at DATETIME,
     created_at DATETIME
 );
-DROP TABLE products ;
 
 
 --    --> Creating order items table <-- 
@@ -76,12 +58,7 @@ CREATE TABLE order_items (
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
-select * from orders;
-select * from order_items;
-SELECT * FROM products;
 
-
-drop table order_items;
 
 
 --    --> Creating transactions table <-- 
@@ -100,6 +77,8 @@ DROP TABLE transactions;
 DROP TABLE order_items;
 DROP TABLE orders;
 DROP TABLE users;
+DROP TABLE products;
+
 
 use my_app;
 
