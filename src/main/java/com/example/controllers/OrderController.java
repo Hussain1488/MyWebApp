@@ -10,27 +10,28 @@ import com.example.services.ProductService;
 import com.example.services.UserService;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class OrderController {
     private final OrderService orderService;
     private final Scanner scanner;
-    private final UserEntity customer;
+    private final UserEntity user;
     final private ProductService productService = new ProductService();
     private final OrderItemService orderItemService;
+    private final UserService userService = new UserService();
 
 
-    public OrderController(UserEntity customer) throws SQLException {
-        this.customer = customer;
+    public OrderController(UserEntity user) throws SQLException {
+        this.user = user;
         this.orderService = new OrderService();
         this.scanner = new Scanner(System.in);
         this.orderItemService = new OrderItemService();
     }
 
 
-    public void userMenu() {
+    public void orderMenu() {
         boolean exit = false;
         while (!exit) {
             System.out.println("\nUser Order Menu:");
@@ -59,7 +60,7 @@ public class OrderController {
                     break;
                 case 0:
                     exit = true;
-                    System.out.println("Logging out...");
+                    System.out.println("<--back");
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -69,12 +70,12 @@ public class OrderController {
 
     private void createOrder() {
         try {
-            if (orderService.hasUnpaidOrders(customer.getUserId())) {
+            if (orderService.hasUnpaidOrders(user.getUserId())) {
                 System.out.println("You have unpaid orders. Please clear payments before creating a new order.");
                 return;
             }
 
-            OrderEntity newOrder = new OrderEntity(customer.getUserId(), 0.0, "PENDING");
+            OrderEntity newOrder = new OrderEntity(user.getUserId(), 0.0, "PENDING");
             if (orderService.createOrder(newOrder)) {
                 System.out.println("Order created successfully! Order ID: " + newOrder.getOrderId());
                 System.out.println("Wnat to add Items to the order? (1) --> yes, (0) --> no:");
@@ -98,7 +99,7 @@ public class OrderController {
 
     private void viewOrders() {
         try {
-            List<OrderEntity> orders = orderService.getOrdersByUserId(customer.getUserId());
+            List<OrderEntity> orders = orderService.getOrdersByUserId(user.getUserId());
             if (orders.isEmpty()) {
                 System.out.println("No orders found.");
                 return;
@@ -125,12 +126,12 @@ public class OrderController {
 
         try {
             OrderEntity order = orderService.getOrderById(orderId);
-            if (order == null || order.getUserId() != customer.getUserId()) {
+            if (order == null || order.getUserId() != user.getUserId()) {
                 System.out.println("Order not found or does not belong to you.");
                 return;
             }
-            if (Objects.equals(order.getStatus(), "DELIVERED")) {
-                System.out.print("Order has been delivered. You can't update this order. Please make another order.");
+            if (order.getStatus().equals("DELIVERED") || order.getStatus().equals("CANCELLED")) {
+                System.out.print("Order has been " + order.getStatus() + ". You can't update this order. Please make another order.");
                 return;
             }
 
@@ -146,7 +147,11 @@ public class OrderController {
                 ProductEntity product = productService.findProductById(productId);
                 if (product == null) {
                     System.out.println("Product not found.");
-                    return;
+                    continue;
+                }
+                if(product.getStatus().equals(ProductEntity.Status.OUT_STOCK)){
+                    System.out.println("This product is out of stock. Please make another product.\n");
+                    continue;
                 }
                 System.out.print("Enter Quantity: ");
                 int quantity = scanner.nextInt();
@@ -181,13 +186,13 @@ public class OrderController {
 
         try {
             OrderEntity order = orderService.getOrderById(orderId);
-            if (order == null || order.getUserId() != customer.getUserId()) {
+            if (order == null || order.getUserId() != user.getUserId()) {
                 System.out.println("Order not found or does not belong to you.");
                 return;
             }
 
-            if (order.getStatus().equals("DELIVERED")) {
-                System.out.println("Cannot update a delivered order.");
+            if (order.getStatus().equals("DELIVERED") || order.getStatus().equals("CANCELLED")) {
+                System.out.print("Order has been " + order.getStatus() + ". You can't update this order.");
                 return;
             }
 
@@ -206,6 +211,19 @@ public class OrderController {
                 processPayment(order.getOrderId());
             }
 
+            System.out.print("Wants to cancel the order? (1) -> yes or (0) -> no: ");
+            int cancel = scanner.nextInt();
+            scanner.nextLine();
+            if (cancel == 1) {
+                OrderEntity cancelledOrder = orderService.getOrderById(orderId);
+                order.setStatus("CANCELLED");
+                if (orderService.updateOrder(cancelledOrder)) {
+                    System.out.println("Order cancelled successfully.");
+                } else {
+                    System.out.println("Failed to cancell order.");
+                }
+            }
+
 
         } catch (SQLException e) {
             System.err.println("Error updating order: " + e.getMessage());
@@ -219,7 +237,7 @@ public class OrderController {
 
         try {
             OrderEntity order = orderService.getOrderById(orderId);
-            if (order == null || order.getUserId() != customer.getUserId()) {
+            if (order == null || order.getUserId() != user.getUserId()) {
                 System.out.println("Order not found or does not belong to you.");
                 return;
             }
@@ -240,7 +258,6 @@ public class OrderController {
     }
 
     private void processPayment(int orderId) {
-
 
         try {
             double outstanding = orderService.getOutstandingBalance(orderId);
@@ -266,6 +283,132 @@ public class OrderController {
             }
         } catch (SQLException e) {
             System.err.println("Error processing payment: " + e.getMessage());
+        }
+    }
+
+
+    public void adminMenu(UserEntity user, Scanner sc) throws SQLException {
+
+        if (!user.getRole().equals("admin")) {
+            System.out.println("You don't have permission to access this resource.");
+            return;
+        }
+
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("\nUser Order Menu:");
+            System.out.println("(1)--> Create New Order");
+            System.out.println("(2)--> View all Orders");
+            System.out.println("(3)--> Cancel user Order");
+            System.out.println("(0)--> Back");
+
+            int option = sc.nextInt();
+            sc.nextLine(); // Consume newline
+
+            switch (option) {
+                case 1:
+                    createNewOrder(sc);
+                    break;
+                case 2:
+
+                    viewAllOrders(sc, user);
+                    break;
+                case 3:
+                    cancelUserOrder(sc);
+                    break;
+                case 0:
+                    exit = true;
+                    System.out.println("<--back");
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    private void createNewOrder(Scanner sc) throws SQLException {
+        System.out.print("Enter User ID to create new order: ");
+        int userId = sc.nextInt();
+        UserEntity customer = userService.findUserById(userId);
+
+        if (customer == null) {
+            System.out.println("Customer not found.");
+            return;
+        }
+
+        OrderEntity order = new OrderEntity(customer.getUserId(), 0.0, "PENDING");
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+
+        order.setCreatedAt(currentTimestamp);
+        order.setUpdatedAt(currentTimestamp);
+        order.setPaidAmount(0.0);
+
+        boolean orderCreated = orderService.createOrder(order);
+        if (orderCreated) {
+            System.out.println("Order created successfully with ID: " + order.getOrderId());
+        } else {
+            System.out.println("Failed to create order.");
+        }
+    }
+
+    private void viewAllOrders(Scanner sc, UserEntity user) throws SQLException {
+
+        System.out.println("Please select one option to filter orders: ");
+        System.out.println("(1) --> All");
+        System.out.println("(2) --> Pending");
+        System.out.println("(3) --> Delivered");
+        System.out.println("(4) --> Canceled");
+        System.out.println("(5) --> Paid");
+        System.out.println("(0) --> Back");
+
+        int option = sc.nextInt();
+        String filter = "PENDING";
+        if (option == 2) {
+            filter = "PENDING";
+        } else if (option == 3) {
+            filter = "DELIVERED";
+            option = 2;
+        } else if (option == 4) {
+            filter = "CANCELLED";
+            option = 2; }
+        else if (option == 5) {
+            filter = "PAID";
+            option = 2;
+        }
+        switch (option) {
+            case 1:
+                orderService.getAllOrders(sc);
+                break;
+            case 2:
+                orderService.getFilteredOrders(filter, sc);
+                break;
+            case 0:
+                return;
+        }
+
+
+    }
+
+    private void cancelUserOrder(Scanner sc) throws SQLException {
+
+        System.out.print("Enter Order ID to update order: ");
+        int orderId = sc.nextInt();
+        OrderEntity order = orderService.getOrderById(orderId);
+        if (order == null) {
+            System.out.println("Order not found.");
+            return;
+        }
+        if (order.getStatus().equals("DELIVERED")) {
+            System.out.println("Cannot cancel a delivered order.");
+            return;
+        }
+
+        order.setStatus("CANCELLED");
+        boolean isUpdated = orderService.updateOrder(order);
+        if (isUpdated) {
+            System.out.println("Order updated successfully.");
+        }else{
+            System.out.println("Failed to update order.");
         }
     }
 }

@@ -35,6 +35,7 @@ public class ProductEntity {
 
     public ProductEntity(){}
 
+
     // Getters and Setters
     public int getProductId() {
         return productId;

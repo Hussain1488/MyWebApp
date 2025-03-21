@@ -12,12 +12,14 @@ public class AdminController extends UserController {
     final private Scanner sc;
     final private UserEntity user;
     private UserService userService;
+    private OrderController orderController;
 
     public AdminController(UserEntity user, Scanner sc) {
         this.user = user;
         this.sc = sc;
         try {
-            this.userService = new UserService(); // Initialize UserService
+            this.userService = new UserService();
+            this.orderController = new OrderController(user);
         } catch (SQLException e) {
             System.out.println("Database connection error: " + e.getMessage());
         }
@@ -40,7 +42,7 @@ public class AdminController extends UserController {
                     productController.menu();
                     break;
                 case 3:
-                    System.out.println("Orders operations not implemented yet.");
+                    orderController.adminMenu(user, sc);
                     break;
                 case 0:
                     exit = true;
@@ -72,49 +74,49 @@ public class AdminController extends UserController {
                     try {
                         updatePhoneNumber();
                     } catch (SQLException e) {
-                        System.err.println("Error updating phone number: " + e.getMessage());
+                        System.err.println(e.getMessage());
                     }
                     break;
                 case 2:
                     try {
                         changePassword();
                     } catch (SQLException e) {
-                        System.err.println("Error changing password: " + e.getMessage());
+                        System.err.println(e.getMessage());
                     }
                     break;
                 case 3:
                     try {
                         userList();
                     } catch (SQLException e) {
-                        System.err.println("Error changing password: " + e.getMessage());
+                        System.err.println(e.getMessage());
                     }
                     break;
                 case 4:
                     try {
                         findUser();
                     } catch (SQLException e) {
-                        System.err.println("Error changing password: " + e.getMessage());
+                        System.err.println(e.getMessage());
                     }
                     break;
                 case 5:
                     try {
                         deleteUser();
                     } catch (SQLException e) {
-                        System.err.println("Error changing password: " + e.getMessage());
+                        System.err.println(e.getMessage());
                     }
                     break;
                 case 6:
                     try {
                         editUser();
                     } catch (SQLException e) {
-                        System.err.println("Error changing password: " + e.getMessage());
+                        System.err.println(e.getMessage());
                     }
                     break;
                 case 7:
                     try {
                         createUser();
                     } catch (SQLException e) {
-                        System.err.println("Error changing password: " + e.getMessage());
+                        System.err.println(e.getMessage());
                     }
                     break;
                 case 0:
@@ -130,29 +132,11 @@ public class AdminController extends UserController {
 
 
     private void changePassword() throws SQLException {
-        System.out.print("Enter your old password: ");
-        String oldPassword = sc.nextLine();
-        System.out.print("Enter your new password: ");
-        String newPassword = sc.nextLine();
-        boolean verifyPassword = userService.changePassword(user, newPassword, oldPassword);
-        if (verifyPassword) {
-            System.out.println("Password changed successfully.");
-        } else {
-            System.out.println("Password change failed.");
-        }
+        super.changePassword(user, sc);
     }
 
     private void updatePhoneNumber() throws SQLException {
-        System.out.print("Enter your new phone number: ");
-        String newPhoneNumber = sc.nextLine();
-        System.out.print("Enter your password: ");
-        String password = sc.nextLine();
-        boolean verifyUpdate = userService.updatePhoneNumber(user, password, newPhoneNumber);
-        if (verifyUpdate) {
-            System.out.println("Phone number updated successfully.");
-        } else {
-            System.out.println("Phone number update failed.");
-        }
+        super.updatePhoneNumber(user, sc);
     }
 
     private void userList() throws SQLException {
@@ -281,7 +265,6 @@ public class AdminController extends UserController {
         System.out.println("Email: " + user.getEmail());
         System.out.println("Phone: " + user.getPhone());
 
-        // Prompt for updated details
         System.out.println("\nEnter new details (leave blank to keep current value):");
 
         System.out.print("Username: ");
@@ -336,7 +319,6 @@ public class AdminController extends UserController {
         System.out.print("Enter user ID: ");
 
     }
-
 
 }
 

@@ -11,10 +11,9 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
-
     public static void main(String[] args) throws SQLException {
-        ConnectionTester db = new ConnectionTester();
         UserController userController = new UserController();
+        ConnectionTester connection = new ConnectionTester();
         Scanner sc = new Scanner(System.in);
         boolean wantToExit = false;
 
@@ -23,13 +22,13 @@ public class Main {
 
         while (!wantToExit) {
             System.out.println("Please choose your option!");
-            System.out.println("-->(1) for installation, \n-->(2) for Logging in \n-->(3) for registration \n-->(0) for exit");
+            System.out.println("-->(1) for database connection test, \n-->(2) for Logging in \n-->(3) for registration \n-->(0) for exit");
             int option = sc.nextInt();
             sc.nextLine();
 
             switch (option) {
                 case 1:
-                    db.testConnections();
+                    connection.testConnections();
                     break;
                 case 2:
                     UserEntity user = userController.Login(sc);
@@ -46,7 +45,7 @@ public class Main {
                     }
                     break;
                 case 3:
-                    userController.createUser(sc); // Pass the Scanner object
+                    userController.createUser(sc);
                     break;
                 case 0:
                     System.out.println("Comeback Again!");
@@ -57,7 +56,6 @@ public class Main {
                     break;
             }
         }
-
         sc.close(); // Close the scanner to avoid resource leak
     }
 
@@ -65,8 +63,4 @@ public class Main {
         System.out.println("Installation");
     }
 
-    public static void databaseConnectivityTest() {
-        ConnectionTester connectionTester = new ConnectionTester();
-        connectionTester.testConnections();
-    }
 }

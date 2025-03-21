@@ -160,4 +160,70 @@ public class OrderDao extends DOA {
     }
 
 
+    public List<OrderEntity> getAllOrders(int limit, int offset) throws SQLException {
+        String query = "SELECT * FROM orders ORDER BY created_at ASC LIMIT ? OFFSET ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, limit);
+            stmt.setInt(2, offset);
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<OrderEntity> orders = new ArrayList<>();
+                while (rs.next()) {
+                    OrderEntity order = new OrderEntity();
+                    order.setOrderId(rs.getInt("order_id"));
+                    order.setUserId(rs.getInt("user_id"));
+                    order.setTotalAmount(rs.getDouble("total_amount"));
+                    order.setPaidAmount(rs.getDouble("paid_amount"));
+                    order.setStatus(rs.getString("status"));
+                    order.setCreatedAt(rs.getTimestamp("created_at"));
+                    order.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    orders.add(order);
+                }
+                return orders;
+            }catch(SQLException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<OrderEntity> getFilteredOrders(int limit, int offset, String filter) throws SQLException {
+        // Corrected SQL query
+        String query = "SELECT * FROM orders WHERE status = ? ORDER BY created_at ASC LIMIT ? OFFSET ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            // Set the filter value for the status column
+            stmt.setString(1, filter);
+            // Set LIMIT and OFFSET parameters
+            stmt.setInt(2, limit);
+            stmt.setInt(3, offset);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<OrderEntity> orders = new ArrayList<>();
+
+                while (rs.next()) {
+                    OrderEntity order = new OrderEntity();
+                    order.setOrderId(rs.getInt("order_id"));
+                    order.setUserId(rs.getInt("user_id"));
+                    order.setTotalAmount(rs.getDouble("total_amount"));
+                    order.setPaidAmount(rs.getDouble("paid_amount"));
+                    order.setStatus(rs.getString("status"));
+                    order.setCreatedAt(rs.getTimestamp("created_at"));
+                    order.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    orders.add(order);
+                }
+
+                return orders;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw e; // Rethrow the exception instead of returning null
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException("Failed to retrieve filtered orders", e);
+        }
+    }
+
 }

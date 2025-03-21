@@ -8,10 +8,12 @@ import java.util.Scanner;
 
 public class UserController {
     private UserService userService;
+    private UserEntity userEntity;
 
     public UserController() {
         try {
-            this.userService = new UserService(); // Initialize UserService
+            this.userService = new UserService();
+            this.userEntity = new UserEntity();
         } catch (SQLException e) {
             System.out.println("Database connection error: " + e.getMessage());
         }
@@ -72,12 +74,49 @@ public class UserController {
             user.getUserDetails();
             System.out.println("Successfully logged in!");
             System.out.println("Welcome Back: " + user.getFirstName() + ' ' + user.getLastName());
-           return user;
+            return user;
         }
     }
 
     public void menu(UserEntity user) {
         System.out.println("Welcome to the user Menu");
+    }
+
+    public void updatePhoneNumber(UserEntity user, Scanner sc) throws SQLException {
+        System.out.print("Enter your new phone number: ");
+        String newPhoneNumber = sc.nextLine();
+        System.out.print("Enter your password: ");
+        String password = sc.nextLine();
+        boolean verifyUpdate = userService.updatePhoneNumber(user, password, newPhoneNumber);
+        if (verifyUpdate) {
+            System.out.println("Phone number updated successfully.");
+        } else {
+            System.out.println("Phone number update failed.");
+        }
+    }
+
+    public void changePassword(UserEntity user, Scanner sc) throws SQLException {
+        System.out.print("Enter your old password: ");
+        String oldPassword = sc.nextLine();
+        System.out.print("Enter your new password: ");
+        String newPassword = sc.nextLine();
+        boolean verifyPassword = userService.changePassword(user, newPassword, oldPassword);
+        if (verifyPassword) {
+            System.out.println("Password changed successfully.");
+        } else {
+            System.out.println("Password change failed.");
+        }
+    }
+
+    public void profile(UserEntity user) throws SQLException {
+        System.out.println("\nYou Profile Details:");
+        System.out.println("ID: " + user.getUserId());
+        System.out.println("Username: " + user.getUserName());
+        System.out.println("First Name: " + user.getFirstName());
+        System.out.println("Last Name: " + user.getLastName());
+        System.out.println("Email: " + user.getEmail());
+        System.out.println("Phone: " + user.getPhone());
+        System.out.println("Role: " + user.getRole());
     }
 }
 

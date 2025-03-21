@@ -22,9 +22,6 @@ public class UserDAOImp extends DOA implements UserDOA {
         }
     }
 
-    // Create a new admin user
-
-
     // Getting admin with
     private static UserEntity getAdmin(UserEntity admin) {
         return admin;
@@ -34,18 +31,18 @@ public class UserDAOImp extends DOA implements UserDOA {
     @Override
     public boolean createUser(UserEntity user) throws SQLException {
 
-        String countQuery = "SELECT COUNT(*) FROM users";
-        int userCount = 0;
-
-        try (PreparedStatement countStatement = connection.prepareStatement(countQuery);
-             ResultSet resultSet = countStatement.executeQuery()) {
-            if (resultSet.next()) {
-                userCount = resultSet.getInt(1); // Get the number of existing users
-            }
-        }
+//        String countQuery = "SELECT COUNT(*) FROM users";
+//        int userCount = 0;
+//
+//        try (PreparedStatement countStatement = connection.prepareStatement(countQuery);
+//             ResultSet resultSet = countStatement.executeQuery()) {
+//            if (resultSet.next()) {
+//                userCount = resultSet.getInt(1); // Get the number of existing users
+//            }
+//        }
 
         // Assign role based on user count
-        String userRole = (userCount == 0) ? "admin" : "customer";
+        String userRole = !adminExists() ? "admin" : "customer";
         user.setRole(userRole); // Set the role in the user object
 
         String query = "INSERT INTO users (user_name, first_name, last_name, email, password, phone_number, role, updated_at, created_at) " +
@@ -96,20 +93,6 @@ public class UserDAOImp extends DOA implements UserDOA {
         return null;
     }
 
-    // Retrieve a user by username
-    @Override
-    public UserEntity getUserByUsername(String username) throws SQLException {
-        String query = "SELECT * FROM users WHERE user_name = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, username);
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                return extractUserFromResultSet(resultSet);
-            }
-        }
-        return null;
-    }
 
     @Override
     public UserEntity updateUser(UserEntity user) throws SQLException {
@@ -160,22 +143,6 @@ public class UserDAOImp extends DOA implements UserDOA {
             statement.setInt(1, userId);
             return statement.executeUpdate() > 0; // Return true if delete was successful
         }
-    }
-
-    @Override
-    public UserEntity getUserByEmailAndPassword(String email, String password) throws SQLException {
-        String query = "SELECT * FROM users WHERE email = ? AND password = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, email);
-            statement.setString(2, password);
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                return extractUserFromResultSet(resultSet);
-            }
-        }
-        return null; // Return null if no user is found
     }
 
     public List<UserEntity> getUsersWithLimit(int limit, int offset) throws SQLException {

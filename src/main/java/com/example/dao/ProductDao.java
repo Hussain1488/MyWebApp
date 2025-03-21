@@ -93,6 +93,7 @@ public class ProductDao extends DOA {
                             rs.getInt("stock")
                     );
                     product.setProductId(rs.getInt("product_id"));
+                    product.setStock(rs.getInt("stock"));
                     product.setCreatedOn(rs.getTimestamp("created_at"));
                     product.setUpdatedOn(rs.getTimestamp("updated_at"));
                     return product;

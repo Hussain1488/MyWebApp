@@ -34,13 +34,6 @@
         </dependency>
 
 
-        <!-- MongoDB Java Driver -->
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-sync</artifactId>
-            <version>4.10.2</version>
-        </dependency>
-
         <!-- JSTL for Java EE -->
         <dependency>
             <groupId>javax.servlet</groupId>

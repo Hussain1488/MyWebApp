@@ -14,14 +14,10 @@ public interface UserDOA {
 
     UserEntity getUserByEmail(String email) throws SQLException;
 
-    UserEntity getUserByUsername(String username) throws SQLException;
 
     UserEntity updateUser(UserEntity user) throws SQLException;
 
     boolean deleteUser(int user) throws SQLException;
-
-    UserEntity getUserByEmailAndPassword(String email, String password) throws SQLException;
-
 
 
 }

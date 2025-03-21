@@ -13,20 +13,20 @@ public class MySQLConnection {
         return DriverManager.getConnection(URL, USERNAME, PASSWORD);
     }
 
-    public static String checkConnectionStatus() {
+    public static void checkConnectionStatus() {
+        boolean status = false;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver"); // Ensure driver is loaded
             try (Connection connection = getConnection()) {
                 if (connection != null && !connection.isClosed()) {
-                    return "MySQL Connection: Successful";
+                    System.out.println("Connected to MySQL database successfully");
                 }
             }
         } catch (ClassNotFoundException e) {
-            return "MySQL Connection: Failed - Driver not found: " + e;
+            System.out.println("MySQL Connection: Failed - Driver not found: " + e);
         } catch (SQLException e) {
-            return "MySQL Connection: Failed - " + e;
+            System.out.println("MySQL Connection: Failed - " + e);
         }
-        return "MySQL Connection: Unknown Status";
     }
 
 }
