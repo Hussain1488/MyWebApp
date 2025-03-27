@@ -71,7 +71,7 @@ public class OrderService {
     public boolean deleteOrder(int orderId) throws SQLException {
         return orderDao.deleteOrder(orderId);
     }
-
+//    Method for getting all orders.
     public void getAllOrders(Scanner sc) throws SQLException {
         int limit = 5;
         int offset = 0;
@@ -79,7 +79,7 @@ public class OrderService {
         while (!exit) {
             List<OrderEntity> orders = orderDao.getAllOrders(limit, offset);
             for (OrderEntity order : orders) {
-                System.out.println(order);
+                System.out.println("ID: "+order.getOrderId()+" | Amount: "+order.getTotalAmount()+ " | Paid Amount: "+order.getPaidAmount()+" | Status: "+order.getStatus()+" ");
             }
             System.out.println("(n) --> for next page\n(p) --> for previous page\n (e) --> for exit page)");
             String page = sc.next();
@@ -95,6 +95,8 @@ public class OrderService {
         }
         return;
     }
+
+//    Getting filtered orders
     public void getFilteredOrders(String filter, Scanner sc) throws SQLException {
         int limit = 5;
         int offset = 0;
@@ -102,7 +104,7 @@ public class OrderService {
         while (!exit) {
             List<OrderEntity> orders = orderDao.getFilteredOrders(limit, offset, filter);
             for (OrderEntity order : orders) {
-                System.out.println(order);
+                System.out.println("ID: "+order.getOrderId()+" | Amount: "+order.getTotalAmount()+ " | Paid Amount: "+order.getPaidAmount()+" | Status: "+order.getStatus()+" ");
             }
             System.out.println("(n) --> for next page\n(p) --> for previous page\n (e) --> for exit page)");
             String page = sc.next();

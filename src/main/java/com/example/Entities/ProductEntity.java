@@ -33,7 +33,8 @@ public class ProductEntity {
         this.updatedOn = currentTimestamp;
     }
 
-    public ProductEntity(){}
+    public ProductEntity() {
+    }
 
 
     // Getters and Setters
@@ -46,6 +47,7 @@ public class ProductEntity {
         updateTimestamp();
     }
 
+//    Getters and Setters.
     public String getProductTitle() {
         return productTitle;
     }
@@ -55,7 +57,7 @@ public class ProductEntity {
         updateTimestamp();
     }
 
-    public double  getPrice() {
+    public double getPrice() {
         return price;
     }
 

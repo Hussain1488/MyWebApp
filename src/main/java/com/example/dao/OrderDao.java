@@ -5,6 +5,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+//order controller for database communication with order table and its relations.
 public class OrderDao extends DOA {
 
     public OrderDao() throws SQLException {
@@ -159,7 +160,7 @@ public class OrderDao extends DOA {
         }
     }
 
-
+//getting all orders with limit (pagination)
     public List<OrderEntity> getAllOrders(int limit, int offset) throws SQLException {
         String query = "SELECT * FROM orders ORDER BY created_at ASC LIMIT ? OFFSET ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -189,8 +190,9 @@ public class OrderDao extends DOA {
         }
     }
 
+//    getting all orders with specifict status
     public List<OrderEntity> getFilteredOrders(int limit, int offset, String filter) throws SQLException {
-        // Corrected SQL query
+
         String query = "SELECT * FROM orders WHERE status = ? ORDER BY created_at ASC LIMIT ? OFFSET ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {

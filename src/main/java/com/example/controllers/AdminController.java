@@ -1,12 +1,13 @@
 package com.example.controllers;
 
 import com.example.Entities.UserEntity;
-import com.example.dao.UserDAOImp;
 import com.example.services.UserService;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
+
+//Admin Controller for all admin Operations, just users with adin role can access here.
 
 public class AdminController extends UserController {
     final private Scanner sc;
@@ -14,6 +15,7 @@ public class AdminController extends UserController {
     private UserService userService;
     private OrderController orderController;
 
+    //    Constructore for AdminController Class
     public AdminController(UserEntity user, Scanner sc) {
         this.user = user;
         this.sc = sc;
@@ -25,13 +27,22 @@ public class AdminController extends UserController {
         }
     }
 
+    //    Main menu for admin Operations
     public void menu() throws SQLException {
         boolean exit = false;
+        int option = -1;
+
         while (!exit) {
-            System.out.println("Admin Menu:\n-->(1) For Users Operations \n-->(2) For Products" +
-                    " \n-->(3) For Orders \n-->(0) Back");
-            int option = sc.nextInt();
-            sc.nextLine(); // Consume the newline character
+            System.out.println("Admin Menu:\n-->(1) For Users Operations \n-->(2) For Products" + " \n-->(3) For Orders \n-->(0) Back");
+
+            if (sc.hasNextInt()) {
+                option = sc.nextInt();
+                sc.nextLine();
+            } else {
+                System.out.println("Invalid input! Please enter a valid number.");
+                sc.next();
+                continue;
+            }
 
             switch (option) {
                 case 1:
@@ -55,6 +66,7 @@ public class AdminController extends UserController {
         }
     }
 
+    //    Operations for admin on users
     private void userMenu() {
 
         boolean exit = false;
@@ -65,10 +77,10 @@ public class AdminController extends UserController {
 
             while (!sc.hasNextInt()) {
                 System.out.println("Invalid input. Please enter a valid number.");
-                sc.next(); // Clear invalid input
+                sc.next();
             }
             int option = sc.nextInt();
-            sc.nextLine(); // Consume the newline character
+            sc.nextLine();
             switch (option) {
                 case 1:
                     try {
@@ -130,7 +142,7 @@ public class AdminController extends UserController {
         }
     }
 
-
+    //    authenticated amin change password function
     private void changePassword() throws SQLException {
         super.changePassword(user, sc);
     }
@@ -139,6 +151,7 @@ public class AdminController extends UserController {
         super.updatePhoneNumber(user, sc);
     }
 
+    //    user list function for monitoring
     private void userList() throws SQLException {
         int limit = 5; // Number of users to display per page
         int offset = 0; // Starting point for fetching users
@@ -174,6 +187,7 @@ public class AdminController extends UserController {
         }
     }
 
+    //    User find by id function
     private void findUser() throws SQLException {
         System.out.print("Enter user ID: ");
         int userId = sc.nextInt(); // Read the user ID from input
@@ -199,6 +213,7 @@ public class AdminController extends UserController {
 
     }
 
+    //    User Delete function
     private void deleteUser() throws SQLException {
         System.out.print("Enter user ID to delete: ");
         System.out.println("Enter (0) for Cancel :");
@@ -238,6 +253,7 @@ public class AdminController extends UserController {
 
     }
 
+    //    User edit function
     private void editUser() throws SQLException {
         // Prompt for user ID
         System.out.print("Enter user ID to edit: ");
@@ -315,6 +331,7 @@ public class AdminController extends UserController {
         }
     }
 
+    //    Create new user function
     private void createUser() throws SQLException {
         System.out.print("Enter user ID: ");
 

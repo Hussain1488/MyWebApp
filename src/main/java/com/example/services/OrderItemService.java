@@ -9,18 +9,12 @@ public class OrderItemService {
 
     private final OrderItemDao orderItemDao;
 
+//    Order Items Service contructore
     public OrderItemService() throws SQLException {
         this.orderItemDao = new OrderItemDao();
     }
 
-    public boolean addOrderItem(OrderItemEntity orderItem) throws SQLException {
-        return orderItemDao.addOrderItem(orderItem);
-    }
-
-    public List<OrderItemEntity> getOrderItemsByOrderId(int orderId) throws SQLException {
-        return orderItemDao.getOrderItemsByOrderId(orderId);
-    }
-
+//    Method for adding items to order
     public boolean addItemToOrder(OrderItemEntity item) throws SQLException {
         return orderItemDao.addOrderItem(item);
     }

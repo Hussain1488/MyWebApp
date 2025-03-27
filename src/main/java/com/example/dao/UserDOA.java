@@ -1,11 +1,10 @@
 package com.example.dao;
 
 import com.example.Entities.UserEntity;
-import com.example.base.User;
 
-import javax.lang.model.type.NullType;
 import java.sql.SQLException;
 
+//userDOA interface for creating the user DOA functions.
 public interface UserDOA {
 
     boolean createUser(UserEntity user) throws SQLException;

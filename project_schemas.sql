@@ -73,11 +73,11 @@ CREATE TABLE transactions (
 -- DROP TABLE transactions;
 
 
-DROP TABLE transactions;
-DROP TABLE order_items;
-DROP TABLE orders;
-DROP TABLE users;
-DROP TABLE products;
+-- DROP TABLE transactions;
+-- DROP TABLE order_items;
+-- DROP TABLE orders;
+-- DROP TABLE users;
+-- DROP TABLE products;
 
 
 use my_app;

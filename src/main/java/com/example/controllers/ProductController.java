@@ -2,32 +2,42 @@ package com.example.controllers;
 
 import com.example.Entities.ProductEntity;
 import com.example.Entities.UserEntity;
-import com.example.base.User;
 import com.example.services.ProductService;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
+//Product controller class for managing products.
 public class ProductController {
 
     private final Scanner sc;
     private final ProductService productService;
     private final UserEntity user;
 
+    //    Product controller constructore.
     public ProductController(Scanner sc, UserEntity user) throws SQLException {
         this.sc = sc;
         this.productService = new ProductService();
         this.user = user;
     }
 
+    //    Admin access menu for products
     public void menu() {
         boolean exit = false;
+        int option = -1;
         while (!exit) {
             System.out.println("Product Menu:\n-->(1) Create Product \n-->(2) List Products \n-->(3) Update Product" +
                     " \n-->(4) Delete Product \n-->(5) Find Product \n-->(0) Back");
-            int option = sc.nextInt();
-            sc.nextLine(); // Consume the newline character
+
+            if (sc.hasNextInt()) {
+                option = sc.nextInt();
+                sc.nextLine();
+            } else {
+                System.out.println("Invalid input! Please enter a valid number.");
+                sc.next();
+                continue;
+            }
 
             switch (option) {
                 case 1:
@@ -56,6 +66,7 @@ public class ProductController {
         }
     }
 
+    //    creating new product by admin
     private void createProduct() {
         System.out.print("Enter product title: ");
         String title = sc.nextLine();
@@ -83,6 +94,7 @@ public class ProductController {
         }
     }
 
+    //    monitoring and listing all products by admin
     private void listProducts() {
         try {
             List<ProductEntity> products = productService.getAllProducts();
@@ -94,6 +106,7 @@ public class ProductController {
         }
     }
 
+    //    updating existing product by admin
     private void updateProduct() {
         System.out.print("Enter product ID to update: ");
         int productId = sc.nextInt();
@@ -140,6 +153,7 @@ public class ProductController {
         }
     }
 
+    //    deleting existing product by admin
     private void deleteProduct() {
         System.out.print("Enter product ID to delete: ");
         int productId = sc.nextInt();
@@ -156,6 +170,7 @@ public class ProductController {
         }
     }
 
+    //    find product by id
     private void findProduct() {
         System.out.print("Enter product ID to find: ");
         int productId = sc.nextInt();

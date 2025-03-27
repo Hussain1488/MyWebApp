@@ -1,29 +1,28 @@
 package com.example.services;
 
 import com.example.Entities.UserEntity;
-import com.example.dao.MySQLConnection;
 import com.example.dao.UserDAOImp;
-import com.example.dao.UserDOA;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+// user service class
 public class UserService {
     private UserDAOImp userDAO;
 
 
     public UserService() throws SQLException {
-        this.userDAO = new UserDAOImp(); // Ensure UserDAOImp is initialized
+        this.userDAO = new UserDAOImp();
 
     }
 
     public UserService(UserDAOImp userDAO) throws SQLException {
-        this.userDAO = userDAO; // Ensure UserDAOImp is initialized
+        this.userDAO = userDAO;
     }
 
+    //    method for user registratioin.
     public UserEntity registerUser(UserEntity newUser) throws SQLException {
         // Check if user already exists (by email)
         if (userDAO.getUserByEmail(newUser.getEmail()) != null) {
@@ -42,9 +41,10 @@ public class UserService {
         if (userDAO.createUser(newUser)) {
             return userDAO.getUserByEmail(newUser.getEmail());
         }
-            return null;
+        return null;
     }
 
+    //    User Athentication.
     public UserEntity authenticateUser(String email, String password) throws SQLException {
         UserEntity user = userDAO.getUserByEmail(email);
         if (user != null && verifyPassword(password, user.getPassword())) {
@@ -53,10 +53,12 @@ public class UserService {
         return null; // Authentication failed
     }
 
+    //    user password verification method
     private boolean verifyPassword(String enteredPassword, String storedHashedPassword) {
         return hashPassword(enteredPassword).equals(storedHashedPassword);
     }
 
+    //    hashing password method.
     private String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -71,6 +73,7 @@ public class UserService {
         }
     }
 
+    //    password change functions.
     public boolean changePassword(UserEntity user, String newPassword, String oldPassword) throws SQLException {
         boolean verifyPassword = verifyPassword(oldPassword, user.getPassword());
         if (verifyPassword) {
@@ -79,6 +82,7 @@ public class UserService {
         return verifyPassword;
     }
 
+    //    update user phone number
     public boolean updatePhoneNumber(UserEntity user, String password, String phoneNumber) throws SQLException {
         boolean verifyPassword = verifyPassword(password, user.getPassword());
         if (verifyPassword) {
@@ -88,18 +92,22 @@ public class UserService {
         return verifyPassword;
     }
 
+    //    Getting user list
     public List<UserEntity> getUsersWithPagination(int limit, int offset) throws SQLException {
         return userDAO.getUsersWithLimit(limit, offset);
     }
 
+    //    getting user by id
     public UserEntity findUserById(int userId) throws SQLException {
         return userDAO.getUserById(userId);
     }
 
+    //    deleting user
     public boolean deleteUser(int userId) throws SQLException {
         return userDAO.deleteUser(userId);
     }
 
+    //    Updating user method.
     public UserEntity updateUser(UserEntity user) throws SQLException {
         UserEntity updatedUser = userDAO.updateUser(user);
         return updatedUser;

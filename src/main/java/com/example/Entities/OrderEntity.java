@@ -2,6 +2,7 @@ package com.example.Entities;
 
 import java.sql.Timestamp;
 
+//Order Entities class for order object.
 public class OrderEntity {
     private int orderId;
     private int userId;

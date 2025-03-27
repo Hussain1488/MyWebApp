@@ -15,7 +15,7 @@ public class TransactionDao extends DOA {
         connection.setAutoCommit(false);
 
         try {
-            // Step 1: Insert the new transaction
+            // Insert the new transaction
             String insertQuery = "INSERT INTO transactions (order_id, amount) VALUES (?, ?)";
             try (PreparedStatement insertStmt = connection.prepareStatement(insertQuery)) {
                 insertStmt.setInt(1, transaction.getOrderId());
@@ -27,7 +27,7 @@ public class TransactionDao extends DOA {
                 }
             }
 
-            // Step 2: Update the paid_amount in the orders table
+            // Update the paid_amount in the orders table
             String updateQuery = "UPDATE orders SET paid_amount = paid_amount + ? WHERE order_id = ?";
             try (PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
                 updateStmt.setDouble(1, transaction.getAmount());
@@ -51,7 +51,7 @@ public class TransactionDao extends DOA {
             connection.commit();
             return true;
         } catch (SQLException e) {
-            connection.rollback(); // Rollback on any error
+            connection.rollback();
             throw e;
         } finally {
             connection.setAutoCommit(true); // Reset auto-commit mode
@@ -72,17 +72,4 @@ public class TransactionDao extends DOA {
         return 0.0;
     }
 
-    public double getTotalPaidAmount(int orderId) throws SQLException {
-        String query = "SELECT SUM(amount) AS total FROM transactions WHERE order_id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, orderId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getDouble("total");
-                }
-            }
-
-        }
-        return 0;
-    }
 }

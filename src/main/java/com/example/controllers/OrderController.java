@@ -22,7 +22,7 @@ public class OrderController {
     private final OrderItemService orderItemService;
     private final UserService userService = new UserService();
 
-
+    //    Order controller constructore
     public OrderController(UserEntity user) throws SQLException {
         this.user = user;
         this.orderService = new OrderService();
@@ -30,9 +30,10 @@ public class OrderController {
         this.orderItemService = new OrderItemService();
     }
 
-
-    public void orderMenu() {
+    //    Order menu for customer access
+    public void orderMenu(Scanner sc) {
         boolean exit = false;
+        int option = -1;
         while (!exit) {
             System.out.println("\nUser Order Menu:");
             System.out.println("(1)--> Create New Order");
@@ -42,8 +43,14 @@ public class OrderController {
             System.out.println("(0)--> Main Menu");
 
 
-            int option = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            if (sc.hasNextInt()) {
+                option = sc.nextInt();
+                sc.nextLine();
+            } else {
+                System.out.println("Invalid input! Please enter a valid number.");
+                sc.next();
+                continue;
+            }
 
             switch (option) {
                 case 1:
@@ -68,6 +75,7 @@ public class OrderController {
         }
     }
 
+    //    Order Creation function
     private void createOrder() {
         try {
             if (orderService.hasUnpaidOrders(user.getUserId())) {
@@ -97,6 +105,7 @@ public class OrderController {
         }
     }
 
+    //    order view order
     private void viewOrders() {
         try {
             List<OrderEntity> orders = orderService.getOrdersByUserId(user.getUserId());
@@ -120,6 +129,7 @@ public class OrderController {
         }
     }
 
+    //    product to order addition function
     private void addItemsToOrder(int orderId) {
 
         System.out.println("\nAdding Items to order byId: " + orderId);
@@ -149,7 +159,7 @@ public class OrderController {
                     System.out.println("Product not found.");
                     continue;
                 }
-                if(product.getStatus().equals(ProductEntity.Status.OUT_STOCK)){
+                if (product.getStatus().equals(ProductEntity.Status.OUT_STOCK)) {
                     System.out.println("This product is out of stock. Please make another product.\n");
                     continue;
                 }
@@ -179,6 +189,7 @@ public class OrderController {
         }
     }
 
+    //    Order updatation function
     private void updateOrder() {
         System.out.print("Enter Order ID: ");
         int orderId = scanner.nextInt();
@@ -230,6 +241,7 @@ public class OrderController {
         }
     }
 
+    //    Order delete function
     private void deleteOrder() {
         System.out.print("Enter Order ID: ");
         int orderId = scanner.nextInt();
@@ -257,6 +269,7 @@ public class OrderController {
         }
     }
 
+    //    Payment of order function
     private void processPayment(int orderId) {
 
         try {
@@ -286,7 +299,7 @@ public class OrderController {
         }
     }
 
-
+    //    Admin access menu for orders.
     public void adminMenu(UserEntity user, Scanner sc) throws SQLException {
 
         if (!user.getRole().equals("admin")) {
@@ -295,6 +308,8 @@ public class OrderController {
         }
 
         boolean exit = false;
+        int option = -1;
+
         while (!exit) {
             System.out.println("\nUser Order Menu:");
             System.out.println("(1)--> Create New Order");
@@ -302,8 +317,14 @@ public class OrderController {
             System.out.println("(3)--> Cancel user Order");
             System.out.println("(0)--> Back");
 
-            int option = sc.nextInt();
-            sc.nextLine(); // Consume newline
+            if (sc.hasNextInt()) {
+                option = sc.nextInt();
+                sc.nextLine();
+            } else {
+                System.out.println("Invalid input! Please enter a valid number.");
+                sc.next();
+                continue;
+            }
 
             switch (option) {
                 case 1:
@@ -326,6 +347,7 @@ public class OrderController {
         }
     }
 
+    //    Creating new order for customer user by admin
     private void createNewOrder(Scanner sc) throws SQLException {
         System.out.print("Enter User ID to create new order: ");
         int userId = sc.nextInt();
@@ -351,6 +373,7 @@ public class OrderController {
         }
     }
 
+    //    Monitorin all orders by admin
     private void viewAllOrders(Scanner sc, UserEntity user) throws SQLException {
 
         System.out.println("Please select one option to filter orders: ");
@@ -361,34 +384,49 @@ public class OrderController {
         System.out.println("(5) --> Paid");
         System.out.println("(0) --> Back");
 
-        int option = sc.nextInt();
-        String filter = "PENDING";
-        if (option == 2) {
-            filter = "PENDING";
-        } else if (option == 3) {
-            filter = "DELIVERED";
-            option = 2;
-        } else if (option == 4) {
-            filter = "CANCELLED";
-            option = 2; }
-        else if (option == 5) {
-            filter = "PAID";
-            option = 2;
-        }
-        switch (option) {
-            case 1:
-                orderService.getAllOrders(sc);
-                break;
-            case 2:
-                orderService.getFilteredOrders(filter, sc);
-                break;
-            case 0:
-                return;
+        int option = -1;
+        boolean wantToExit = false;
+
+        while (!wantToExit) {
+
+            if (sc.hasNextInt()) {
+                option = sc.nextInt();
+                sc.nextLine();
+            } else {
+                System.out.println("Invalid input! Please enter a valid number.");
+                sc.next();
+                continue;
+            }
+            String filter = "PENDING";
+            if (option == 2) {
+                filter = "PENDING";
+            } else if (option == 3) {
+                filter = "DELIVERED";
+                option = 2;
+            } else if (option == 4) {
+                filter = "CANCELLED";
+                option = 2;
+            } else if (option == 5) {
+                filter = "PAID";
+                option = 2;
+            }
+            switch (option) {
+                case 1:
+                    orderService.getAllOrders(sc);
+                    break;
+                case 2:
+                    orderService.getFilteredOrders(filter, sc);
+                    break;
+                case 0:
+                    wantToExit = true;
+                    break;
+            }
         }
 
 
     }
 
+    //    Canceling customer order by admin
     private void cancelUserOrder(Scanner sc) throws SQLException {
 
         System.out.print("Enter Order ID to update order: ");
@@ -407,7 +445,7 @@ public class OrderController {
         boolean isUpdated = orderService.updateOrder(order);
         if (isUpdated) {
             System.out.println("Order updated successfully.");
-        }else{
+        } else {
             System.out.println("Failed to update order.");
         }
     }

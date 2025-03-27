@@ -6,6 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// UserDAOImp class for user database operations.
 public class UserDAOImp extends DOA implements UserDOA {
 
 
@@ -145,6 +146,7 @@ public class UserDAOImp extends DOA implements UserDOA {
         }
     }
 
+//    Getting list of users
     public List<UserEntity> getUsersWithLimit(int limit, int offset) throws SQLException {
         String query = "SELECT * FROM users LIMIT ? OFFSET ?";
         List<UserEntity> users = new ArrayList<>();
@@ -161,6 +163,7 @@ public class UserDAOImp extends DOA implements UserDOA {
         return users;
     }
 
+//    Extracting user fields to user entity
     private UserEntity extractUserFromResultSet(ResultSet resultSet) throws SQLException {
         UserEntity user = new UserEntity();
         user.setUserId(resultSet.getInt("user_id"));

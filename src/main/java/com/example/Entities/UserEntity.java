@@ -118,6 +118,7 @@ public class UserEntity {
         this.createdOn = date;
     }
 
+//    -------->  showing users details.
     public void getUserDetails() {
         System.out.println("Your Detaisl :");
         System.out.println("User ID: " + userId);

@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
+
+//    Project Starts here for every users. loggin, register, database connections test here.
     public static void main(String[] args) throws SQLException {
         UserController userController = new UserController();
         ConnectionTester connection = new ConnectionTester();
@@ -19,12 +21,22 @@ public class Main {
 
         System.out.println("Hello Dear!");
         System.out.println("Welcome to Chicken Production MS Application!");
+        int option = -1;
 
         while (!wantToExit) {
             System.out.println("Please choose your option!");
             System.out.println("-->(1) for database connection test, \n-->(2) for Logging in \n-->(3) for registration \n-->(0) for exit");
-            int option = sc.nextInt();
-            sc.nextLine();
+
+
+            if (sc.hasNextInt()) {
+                option = sc.nextInt();
+                sc.nextLine();
+            } else {
+                System.out.println("Invalid input! Please enter a valid number.");
+                sc.next();
+                continue;
+            }
+
 
             switch (option) {
                 case 1:
@@ -40,7 +52,7 @@ public class Main {
                             CustomerController customerController = new CustomerController(user, sc);
                             customerController.menu();
                         }
-                    }else{
+                    } else {
                         System.out.println("Invalid username or password!");
                     }
                     break;
@@ -57,10 +69,6 @@ public class Main {
             }
         }
         sc.close(); // Close the scanner to avoid resource leak
-    }
-
-    public static void installation() {
-        System.out.println("Installation");
     }
 
 }

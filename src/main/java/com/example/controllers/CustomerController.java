@@ -11,7 +11,8 @@ import java.sql.SQLException;
 
 import java.util.Scanner;
 
-public class CustomerController extends UserController{
+//Conroller for user with customer role, can create order, see products, edit their orders, and so on.
+public class CustomerController extends UserController {
 
     private final Scanner sc;
     private final OrderService orderService;
@@ -20,6 +21,7 @@ public class CustomerController extends UserController{
     private final UserEntity customer;
     final private ProductService productService = new ProductService();
 
+    //    CustomerController constructore.
     public CustomerController(UserEntity customer, Scanner sc) throws SQLException {
         this.sc = sc;
         this.orderService = new OrderService();
@@ -29,8 +31,10 @@ public class CustomerController extends UserController{
 
     }
 
+    //    main menu for customer.
     public void menu() {
         boolean exit = false;
+        int option = -1;
         while (!exit) {
             System.out.println("\nCustomer Menu:");
             System.out.println("(1)--> User profile");
@@ -39,17 +43,23 @@ public class CustomerController extends UserController{
             System.out.println("(0)--> Logout");
 
 
-            int option = sc.nextInt();
-            sc.nextLine(); // Consume newline
+            if (sc.hasNextInt()) {
+                option = sc.nextInt();
+                sc.nextLine();
+            } else {
+                System.out.println("Invalid input! Please enter a valid number.");
+                sc.next();
+                continue;
+            }
 
             switch (option) {
                 case 1:
                     userMenu();
                     break;
                 case 2:
-                    orderController.orderMenu();
+                    orderController.orderMenu(sc);
                     break;
-                    case 0:
+                case 0:
                     exit = true;
                     System.out.println("Logging out...");
                     break;
@@ -59,18 +69,20 @@ public class CustomerController extends UserController{
         }
     }
 
+    //    menu for user profile operations.
     private void userMenu() {
 
         boolean exit = false;
 
         while (!exit) {
-            System.out.println("User Operations Menu:\n-->(1) Update Phone Number \n-->(2) Change Password \n-->(3) My Profile Details" +" \n-->(0) Back");
+            System.out.println("User Operations Menu:\n-->(1) Update Phone Number \n-->(2) Change Password \n-->(3) My Profile Details" + " \n-->(0) Back");
             System.out.print("Enter your choice: ");
 
             while (!sc.hasNextInt()) {
                 System.out.println("Invalid input. Please enter a valid number.");
-                sc.next(); // Clear invalid input
+                sc.next();
             }
+
             int option = sc.nextInt();
             sc.nextLine(); // Consume the newline character
             switch (option) {
@@ -106,6 +118,4 @@ public class CustomerController extends UserController{
             }
         }
     }
-
-
 }

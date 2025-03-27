@@ -6,12 +6,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+//order Item Dao class for database operations for order items table and its relations.
 public class OrderItemDao extends DOA {
 
     public OrderItemDao() throws SQLException {
         super();
     }
 
+    //    inserting in to order_item table
     public boolean addOrderItem(OrderItemEntity item) throws SQLException {
         String query = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -23,24 +25,8 @@ public class OrderItemDao extends DOA {
         }
     }
 
-    public boolean updateOrderItem(OrderItemEntity orderItem) throws SQLException {
-        String query = "UPDATE order_items SET quantity = ?, price = ? WHERE order_item_id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, orderItem.getQuantity());
-            stmt.setDouble(2, orderItem.getPrice());
-            stmt.setInt(3, orderItem.getOrderItemId());
-            return stmt.executeUpdate() > 0;
-        }
-    }
 
-    public boolean deleteOrderItem(int orderItemId) throws SQLException {
-        String query = "DELETE FROM order_items WHERE order_item_id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, orderItemId);
-            return stmt.executeUpdate() > 0;
-        }
-    }
-
+    //      Getting list of order items for an order
     public List<OrderItemEntity> getOrderItemsByOrderId(int orderId) throws SQLException {
         List<OrderItemEntity> items = new ArrayList<>();
         String query = "SELECT * FROM order_items WHERE order_id = ?";

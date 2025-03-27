@@ -10,6 +10,7 @@ public class ProductService {
 
     private final ProductDao productDao;
 
+//    Product service constructore
     public ProductService() throws SQLException {
         this.productDao = new ProductDao();
     }

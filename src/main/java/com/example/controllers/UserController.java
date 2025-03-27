@@ -6,10 +6,12 @@ import com.example.services.UserService;
 import java.sql.SQLException;
 import java.util.Scanner;
 
+// user controller the parrent controller for admincontroller and customercontroller.
 public class UserController {
     private UserService userService;
     private UserEntity userEntity;
 
+    //    user controller
     public UserController() {
         try {
             this.userService = new UserService();
@@ -19,6 +21,7 @@ public class UserController {
         }
     }
 
+    //    new user Creation function
     public UserEntity createUser(Scanner sc) {
         System.out.println("For Creating User, Please enter user details:");
 
@@ -60,6 +63,7 @@ public class UserController {
         return null;
     }
 
+    //    Loggin function
     public UserEntity Login(Scanner sc) throws SQLException {
         System.out.print("Please Insert Your Email: ");
         String email = sc.nextLine();
@@ -78,10 +82,7 @@ public class UserController {
         }
     }
 
-    public void menu(UserEntity user) {
-        System.out.println("Welcome to the user Menu");
-    }
-
+    //    Update user phone number function
     public void updatePhoneNumber(UserEntity user, Scanner sc) throws SQLException {
         System.out.print("Enter your new phone number: ");
         String newPhoneNumber = sc.nextLine();
@@ -95,6 +96,7 @@ public class UserController {
         }
     }
 
+    //    change user password
     public void changePassword(UserEntity user, Scanner sc) throws SQLException {
         System.out.print("Enter your old password: ");
         String oldPassword = sc.nextLine();
@@ -108,6 +110,7 @@ public class UserController {
         }
     }
 
+    //    view user profile
     public void profile(UserEntity user) throws SQLException {
         System.out.println("\nYou Profile Details:");
         System.out.println("ID: " + user.getUserId());

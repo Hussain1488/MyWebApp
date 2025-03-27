@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+//MySQL Connection setting.
 public class MySQLConnection {
     private static final String URL = "jdbc:mysql://localhost:3306/my_app";
     private static final String USERNAME = "root"; // Replace with your MySQL username
@@ -13,8 +14,9 @@ public class MySQLConnection {
         return DriverManager.getConnection(URL, USERNAME, PASSWORD);
     }
 
+//    Checking the connection connectivity.
     public static void checkConnectionStatus() {
-        boolean status = false;
+
         try {
             Class.forName("com.mysql.cj.jdbc.Driver"); // Ensure driver is loaded
             try (Connection connection = getConnection()) {
